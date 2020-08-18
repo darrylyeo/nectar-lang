@@ -1,0 +1,75 @@
+WHITESPACE = _{ (" " | "\n" | NEWLINE)+ }
+alpha = @{ 'a'..'z' | 'A'..'Z' }
+digit = @{ '0'..'9' }
+
+identifier = @{ alpha ~ (alpha | digit | "_" | "-")* }
+
+string_content = { (!PEEK ~ ANY)* }
+string = { (PUSH("\""+) | PUSH("'"+)) ~ string_content ~ POP }
+
+integer = { digit+ }
+decimal = @{ digit* ~ "." ~ digit+ }
+number = @{ (decimal | integer) ~ (^"e" ~ integer)? }
+
+unit = { non_keyword ~ ("/" ~ non_keyword)* }
+quantity = { number ~ unit }
+
+article = _{ ^"an" | ^"a" | ^"the" }
+and = _{ ^"and" }
+or = _{ ^"or" }
+is = _{ (^"is" | ^"are" ~ ^"all"? | ^"can be" | ^"am") ~ article? }
+has = _{ (^"has" | ^"have") ~ article? }
+of = _{ ^"of" }
+with = _{ ^"with" }
+aka = _{ ^"aka" }
+
+keyword = _{ article | and | or | is | has | of | with | aka }
+non_keyword = _{ !(keyword) ~ identifier }
+
+noun = @{ "@" ~ identifier }
+category = @{ "#" ~ identifier }
+property = { identifier }
+
+expression = { string | quantity | number }
+
+noun_disjunction = { noun ~ ("," ~ noun)* ~ (","? ~ or ~ noun)+ }
+noun_conjunction = { noun ~ ("," ~ noun)* ~ (","? ~ and ~ noun)+ }
+noun_phrase = _{
+	noun ~ "(" ~ aka? ~ (noun_disjunction | noun) ~ ")" |
+    noun_conjunction |
+    noun ~ ("/" ~ noun)*
+}
+
+category_disjunction = { category ~ ("," ~ category)* ~ (","? ~ or ~ category)+ }
+category_conjunction = { category ~ ("," ~ category)* ~ (","? ~ and ~ category)+ }
+category_phrase = {
+	category ~ "(" ~ aka? ~ (category_disjunction | category) ~ ")" |
+	category_conjunction |
+    category ~ ("/" ~ category)*
+}
+
+subject = { noun_phrase }
+
+relation = {
+	^"to"? ~ (
+		is |
+    	has |
+    	^"created by" |
+    	^"represent" |
+    	^"works with" |
+    	^"compiles to" |
+		^"says"
+    )
+}
+
+
+is_a_predicate = { ( is ~ article? | has ~ article? ~ (^"category" | ^"type") ~ of? ) ~ category_phrase }
+has_property_predicate = { (has | with) ~ article? ~ property ~ of? ~ expression }
+relation_predicate = { relation ~ noun_phrase }
+hyper_relation_predicate = { relation ~ category_phrase }
+
+predicate = _{ is_a_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
+
+
+statement = { subject ~ predicate ~ (("," | and)? ~ predicate)* }
+statements = { statement ~ (identifier* ~ "." ~ statement)* }

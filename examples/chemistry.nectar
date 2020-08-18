@@ -1,0 +1,7 @@
+@Hydrogen is an #element and #diatomic #nonmetal with chemical_symbol "H", atomic_number 1 and atomic_mass 1.01.
+
+@Hydrogen_Dioxide is a #polar #molecule composed_of 2 @hydrogen #atoms and 
+
+
+All #elements have =($atomic_number) @protons.
+All #molecules have =(sum(composed_of @protons)) protons and atomic_mass =(sum(composed_of atomic_mass)).
