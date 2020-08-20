@@ -1,8 +1,64 @@
-use pest_consume::{Error, Parser};
-
+use pest_consume::{match_nodes, Error, Parser};
 
 type Result<T> = std::result::Result<T, Error<Rule>>;
 type Node<'i> = pest_consume::Node<'i, Rule, ()>;
+
+type NectarNoun<'a> = &'a str;
+type NectarSubject<'a> = Vec<NectarNoun<'a>>;
+
+type NectarCategory<'a> = &'a str;
+type NectarCategorization<'a> = Vec<NectarCategory<'a>>;
+
+type NectarUnit<'a> = &'a str;
+
+pub enum NectarValue<'a> {
+	Number(f64),
+	String(&'a str),
+	Quantity {
+		number: f64,
+		unit: NectarUnit<'a>
+	}
+}
+
+enum NectarExpression<'a> {
+	Value(NectarValue<'a>)
+}
+
+type NectarProperty<'a> = &'a str;
+
+type NectarRelation<'a> = &'a str;
+
+#[derive(Debug)]
+pub enum NectarPredicate<'a> {
+	IsA {
+		categorizations: Vec<NectarCategorization<'a>>
+	},
+	HasProperty {
+		property: NectarProperty<'a>,
+		expression: &'a str,
+		// expression: NectarExpression<'a>
+	},
+	Relation {
+		relation: NectarRelation<'a>,
+		object: NectarSubject<'a>
+	},
+	HyperRelation {
+		relation: NectarRelation<'a>,
+		categorizations: Vec<NectarCategorization<'a>>
+	}
+}
+
+#[derive(Debug)]
+pub struct NectarCompoundStatement<'a> {
+	subjects: Vec<NectarSubject<'a>>,
+	// predicates: Vec<NectarPredicate<'a>>
+	predicates: Vec<NectarPredicate<'a>>
+}
+
+// pub struct NectarStatement<'a> {
+// 	subject: NectarSubject<'a>,
+// 	predicate: NectarPredicate<'a>
+// }
 
 
 #[derive(Parser)]
@@ -29,14 +85,23 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 
-	fn integer(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn integer(input: Node) -> Result<f64> {
+		input
+			.as_str()
+			.parse::<f64>()
+			.map_err(|e| input.error(e))
 	}
-	fn decimal(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn decimal(input: Node) -> Result<f64> {
+		input
+			.as_str()
+			.parse::<f64>()
+			.map_err(|e| input.error(e))
 	}
-	fn number(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn number(input: Node) -> Result<f64> {
+		input
+			.as_str()
+			.parse::<f64>()
+			.map_err(|e| input.error(e))
 	}
 
 	fn unit(input: Node) -> Result<&str> {
@@ -46,70 +111,94 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 
-	fn noun(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn category(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn property(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-
 	fn expression(input: Node) -> Result<&str> {
 		Ok(input.as_str())
 	}
 
-	fn noun_disjunction(input: Node) -> Result<&str> {
+	fn noun(input: Node) -> Result<NectarNoun> {
 		Ok(input.as_str())
 	}
-	fn noun_conjunction(input: Node) -> Result<&str> {
+	fn subject(input: Node) -> Result<NectarSubject> {
+		Ok(match_nodes!(input.into_children();
+			[noun(nouns)..] => nouns.collect()
+		))
+	}
+	fn subjects(input: Node) -> Result<Vec<NectarSubject>> {
+		Ok(match_nodes!(input.into_children();
+			[subject(subjects)..] => subjects.collect()
+		))
+	}
+
+	fn category(input: Node) -> Result<NectarCategory> {
 		Ok(input.as_str())
 	}
-	fn noun_phrase(input: Node) -> Result<&str> {
+	fn categorization(input: Node) -> Result<NectarCategorization> {
+		Ok(match_nodes!(input.into_children();
+			[category(categories)..] => categories.collect()
+		))
+	}
+	fn categorizations(input: Node) -> Result<Vec<NectarCategorization>> {
+		Ok(match_nodes!(input.into_children();
+			[categorization(categorizations)..] => categorizations.collect()
+		))
+	}
+
+	fn property(input: Node) -> Result<NectarProperty> {
 		Ok(input.as_str())
 	}
 
-	fn category_disjunction(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn category_conjunction(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn category_phrase(input: Node) -> Result<&str> {
+	fn relation(input: Node) -> Result<NectarRelation> {
 		Ok(input.as_str())
 	}
 
-	fn subject(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn is_a_predicate(input: Node) -> Result<NectarPredicate> {
+		Ok(match_nodes!(input.into_children();
+			[categorizations(categorizations)] => NectarPredicate::IsA { categorizations }
+		))
+	}
+	fn has_property_predicate(input: Node) -> Result<NectarPredicate> {
+		Ok(match_nodes!(input.into_children();
+			[property(property), expression(expression)] => NectarPredicate::HasProperty { property, expression }
+		))
+	}
+	fn relation_predicate(input: Node) -> Result<NectarPredicate> {
+		Ok(match_nodes!(input.into_children();
+			[relation(relation), subject(object)] => NectarPredicate::Relation { relation, object }
+		))
+	}
+	fn hyper_relation_predicate(input: Node) -> Result<NectarPredicate> {
+		Ok(match_nodes!(input.into_children();
+			[relation(relation), categorizations(categorizations)] => NectarPredicate::HyperRelation { relation, categorizations }
+		))
 	}
 
-	fn relation(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn predicate(input: Node) -> Result<NectarPredicate> {
+		Ok(match_nodes!(input.into_children();
+			[is_a_predicate(is_a_predicate)] => is_a_predicate,
+			[has_property_predicate(has_property_predicate)] => has_property_predicate,
+			[relation_predicate(relation_predicate)] => relation_predicate,
+			[hyper_relation_predicate(hyper_relation_predicate)] => hyper_relation_predicate
+		))
+	}
+	fn predicates(input: Node) -> Result<Vec<NectarPredicate>> {
+		Ok(match_nodes!(input.into_children();
+			[predicate(predicates)..] => predicates.collect()
+		))
 	}
 
-	fn is_a_predicate(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn compound_statement(input: Node) -> Result<NectarCompoundStatement> {
+		Ok(match_nodes!(input.into_children();
+			[subjects(subjects), predicates(predicates)] => NectarCompoundStatement {subjects, predicates},
+		))
 	}
-	fn has_property_predicate(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn relation_predicate(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn hyper_relation_predicate(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-
-	fn statement(input: Node) -> Result<&str> {
-		Ok(input.as_str())
-	}
-	fn statements(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+	fn statements(input: Node) -> Result<Vec<NectarCompoundStatement>> {
+		Ok(match_nodes!(input.into_children();
+			[compound_statement(statements)..] => statements.collect(),
+		))
 	}
 }
 
-pub fn parse(input_str: &str) -> Result<&str> {
+pub fn parse(input_str: &str) -> Result<Vec<NectarCompoundStatement>> {
 	// Parse the input into `Nodes`
 	let inputs = NectarParser::parse(Rule::statements, input_str)?;
 	// There should be a single root node in the parsed tree

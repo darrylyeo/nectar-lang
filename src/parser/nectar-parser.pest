@@ -17,38 +17,52 @@ quantity = { number ~ unit }
 article = _{ ^"an" | ^"a" | ^"the" }
 and = _{ ^"and" }
 or = _{ ^"or" }
-is = _{ (^"is" | ^"are" ~ ^"all"? | ^"can be" | ^"am") ~ article? }
+is = _{ (^"is" | ^"are" ~ ^"all"? | ^"can be" | ^"am") }
 has = _{ (^"has" | ^"have") ~ article? }
 of = _{ ^"of" }
 with = _{ ^"with" }
-aka = _{ ^"aka" }
+aka = _{ ^"aka" | ^"alias" | (^"also" | ^"better" | ^"commonly" | ^"otherwise" | ^"widely")? ~ (^"called" | ^"known as" | ^"named" | ^"titled") | or }
 
 keyword = _{ article | and | or | is | has | of | with | aka }
 non_keyword = _{ !(keyword) ~ identifier }
 
-noun = @{ "@" ~ identifier }
-category = @{ "#" ~ identifier }
-property = { identifier }
-
 expression = { string | quantity | number }
 
-noun_disjunction = { noun ~ ("," ~ noun)* ~ (","? ~ or ~ noun)+ }
-noun_conjunction = { noun ~ ("," ~ noun)* ~ (","? ~ and ~ noun)+ }
-noun_phrase = _{
-	noun ~ "(" ~ aka? ~ (noun_disjunction | noun) ~ ")" |
-    noun_conjunction |
-    noun ~ ("/" ~ noun)*
+noun = @{ article? ~ "@" ~ identifier | "@" ~ string }
+noun_disjunction = _{ noun ~ ("," ~ noun)* ~ (","? ~ or ~ noun)+ }
+noun_conjunction = _{ noun ~ ("," ~ noun)* ~ (","? ~ and ~ noun)+ }
+noun_alias = _{
+	"(" ~ aka? ~ (noun | noun_disjunction) ~ ")" |
+	","? ~ aka ~ (noun | noun_disjunction) ~ ","?
 }
 
+subject = {
+	noun ~ noun_alias?
+}
+subjects = {
+	subject ~ ("," ~ subject)* ~ (","? ~ and ~ subject)+ |
+	subject ~ (";" ~ subject)* ~ (";"? ~ and ~ subject)+ |
+	subject ~ ("/" ~ subject)*
+}
+
+category = @{ article? ~ "#" ~ identifier }
 category_disjunction = { category ~ ("," ~ category)* ~ (","? ~ or ~ category)+ }
 category_conjunction = { category ~ ("," ~ category)* ~ (","? ~ and ~ category)+ }
-category_phrase = {
-	category ~ "(" ~ aka? ~ (category_disjunction | category) ~ ")" |
-	category_conjunction |
-    category ~ ("/" ~ category)*
+category_alias = _{
+	"(" ~ aka? ~ (category | category_disjunction) ~ ")" |
+	","? ~ aka ~ (category | category_disjunction) ~ ","?
 }
 
-subject = { noun_phrase }
+categorization = {
+	category ~ category_alias?
+}
+categorizations = {
+	categorization ~ ("," ~ categorization)* ~ (","? ~ and ~ categorization)+ |
+	categorization ~ (";" ~ categorization)* ~ (";"? ~ and ~ categorization)+ |
+	categorization ~ ("/" ~ categorization)*
+}
+
+property = { identifier }
 
 relation = {
 	^"to"? ~ (
@@ -63,13 +77,14 @@ relation = {
 }
 
 
-is_a_predicate = { ( is ~ article? | has ~ article? ~ (^"category" | ^"type") ~ of? ) ~ category_phrase }
+is_a_predicate = { ( is ~ article? | has ~ article? ~ (^"category" | ^"type") ~ of? ) ~ categorizations }
 has_property_predicate = { (has | with) ~ article? ~ property ~ of? ~ expression }
-relation_predicate = { relation ~ noun_phrase }
-hyper_relation_predicate = { relation ~ category_phrase }
+relation_predicate = { relation ~ subject }
+hyper_relation_predicate = { relation ~ categorizations }
 
-predicate = _{ is_a_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
+predicate = { is_a_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
+predicates = { predicate ~ (("," | and)? ~ predicate)* }
 
 
-statement = { subject ~ predicate ~ (("," | and)? ~ predicate)* }
-statements = { statement ~ (identifier* ~ "." ~ statement)* }
+compound_statement = { subjects ~ predicates }
+statements = { compound_statement ~ (identifier* ~ "." ~ compound_statement)* }

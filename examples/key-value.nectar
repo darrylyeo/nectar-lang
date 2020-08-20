@@ -1,0 +1,27 @@
+@Earth
+	is a #planet
+	with name "Earth"
+	with rank 3
+	with an equatorial_radius of 6378.1 km
+	with an average_orbital_speed of 29.78 km/s
+	with a mass of 5.97237e24 kg
+
+The #planet @Earth
+	has name "Earth"
+	has rank 3
+	has an equatorial_radius of 6378.1 km
+	has an average_orbital_speed of 29.78 km/s
+	has a mass of 5.97237e24 kg
+
+#planet @"Earth"
+	rank 3
+	equatorial_radius 6378.1 km
+	average_orbital_speed 29.78 km/s
+	mass 5.97237e24 kg
+
+#planet @"Earth"
+	name "Earth"
+	rank 3
+	equatorial_radius 6378.1
+	average_orbital_speed 29.78
+	mass 5.97237e24
