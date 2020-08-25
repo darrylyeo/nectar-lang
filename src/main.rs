@@ -1,9 +1,10 @@
+use std::{env, fs, io::{self, BufRead, Write}};
+
 extern crate pest;
 extern crate pest_consume;
 
+mod types;
 mod parser;
-
-use std::{env, fs, io::{self, BufRead, Write}};
 
 
 fn print(string: &str){

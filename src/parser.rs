@@ -1,68 +1,13 @@
 use pest_consume::{match_nodes, Error, Parser};
 
+use super::types::*;
+
 type Result<T> = std::result::Result<T, Error<Rule>>;
 type Node<'i> = pest_consume::Node<'i, Rule, ()>;
 
-type NectarNoun<'a> = &'a str;
-type NectarSubject<'a> = Vec<NectarNoun<'a>>;
-
-type NectarCategory<'a> = &'a str;
-type NectarCategorization<'a> = Vec<NectarCategory<'a>>;
-
-type NectarUnit<'a> = &'a str;
-
-pub enum NectarValue<'a> {
-	Number(f64),
-	String(&'a str),
-	Quantity {
-		number: f64,
-		unit: NectarUnit<'a>
-	}
-}
-
-enum NectarExpression<'a> {
-	Value(NectarValue<'a>)
-}
-
-type NectarProperty<'a> = &'a str;
-
-type NectarRelation<'a> = &'a str;
-
-#[derive(Debug)]
-pub enum NectarPredicate<'a> {
-	IsA {
-		categorizations: Vec<NectarCategorization<'a>>
-	},
-	HasProperty {
-		property: NectarProperty<'a>,
-		expression: &'a str,
-		// expression: NectarExpression<'a>
-	},
-	Relation {
-		relation: NectarRelation<'a>,
-		object: NectarSubject<'a>
-	},
-	HyperRelation {
-		relation: NectarRelation<'a>,
-		categorizations: Vec<NectarCategorization<'a>>
-	}
-}
-
-#[derive(Debug)]
-pub struct NectarCompoundStatement<'a> {
-	subjects: Vec<NectarSubject<'a>>,
-	// predicates: Vec<NectarPredicate<'a>>
-	predicates: Vec<NectarPredicate<'a>>
-}
-
-// pub struct NectarStatement<'a> {
-// 	subject: NectarSubject<'a>,
-// 	predicate: NectarPredicate<'a>
-// }
-
 
 #[derive(Parser)]
-#[grammar = "parser/nectar-parser.pest"]
+#[grammar = "grammar.pest"]
 pub struct NectarParser;
 
 #[pest_consume::parser]
