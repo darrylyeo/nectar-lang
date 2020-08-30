@@ -1,3 +1,4 @@
-language = "rust"
-run = "cargo run"
-# run = "cargo run examples/hello.nectar"
+language = "deno"
+# language = "rust"
+
+run = "chmod +x run.sh; ./run.sh"

@@ -7,8 +7,8 @@ extern crate serde_json;
 
 mod types;
 mod parser;
+mod parser_json;
 // mod interpreter;
-mod json_ast;
 
 
 fn print(string: &str){
@@ -25,7 +25,7 @@ fn repl() {
 	print("nectar $ ");
 	for line in stdin.lock().lines() {
 		// interpreter::eval(&line.unwrap());
-		json_ast::parseToJSON(&line.unwrap());
+		println!("{}", parser_json::parse_to_json(&line.unwrap()));
 		print("\nnectar $ ");
 	}
 }
@@ -42,7 +42,7 @@ fn main() {
 			let contents = fs::read_to_string(filename)
 				.expect("Couldn't read the file.");
 			// interpreter::eval(&contents)
-			json_ast::parseToJSON(&contents)
+			println!("{}", parser_json::parse_to_json(&contents));
 		}
 		_ => {}
 	}
