@@ -1,0 +1,39 @@
+Given #person $a is not married to #person $b {
+	
+}
+
+@Jennifer_Aniston, @Michele_Hicks, @Angelina_Jolie, @Jonny_Lee_Miller, @Brad_Pitt, @Justin_Theroux and @Billy_Bob_Thornton are a #person.
+
+timeline {
+	1996 to 1999 {
+		@Angelina_Jolie is married to @Jonny_Lee_Miller
+	}
+
+	2000 to 2005 {
+		@Brad_Pitt is married to @Jennifer_Aniston
+	}
+
+	2000 to 2003 {
+		@Angelina_Jolie is married to @Billy_Bob_Thornton
+	}
+
+	2005 to present {
+		@Brad_Pitt is divorced from @Jennifer_Aniston
+	}
+
+	2008 to present {
+		@Jonny_Lee_Miller is married to @Michele_Hicks
+	}
+	
+	2014 to present {
+		@Brad_Pitt is married to @Angelina_Jolie
+	}
+
+	2015 to present {
+		@Jennifer_Aniston is married to @Justin_Theroux
+	}
+	
+	2019 to present {
+		@Brad_Pitt is legally separated from @Angelina_Jolie
+	}
+}

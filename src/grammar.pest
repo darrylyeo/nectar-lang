@@ -18,7 +18,7 @@ article = _{ ^"an" | ^"a" | ^"the" }
 and = _{ ^"and" }
 or = _{ ^"or" }
 is = _{ (^"is" | ^"are" ~ ^"all"? | ^"can be" | ^"am") }
-has = _{ (^"has" | ^"have") ~ article? }
+has = _{ ^"has" | ^"have" }
 of = _{ ^"of" }
 with = _{ ^"with" }
 aka = _{ ^"aka" | ^"alias" | (^"also" | ^"better" | ^"commonly" | ^"otherwise" | ^"widely")? ~ (^"called" | ^"known as" | ^"named" | ^"titled") | or }
@@ -62,7 +62,7 @@ categorizations = {
 	categorization ~ ("/" ~ categorization)*
 }
 
-property = { identifier }
+property = { article? ~ "#" ~ identifier }
 
 relation = {
 	^"to"? ~ (
@@ -77,8 +77,8 @@ relation = {
 }
 
 
-is_a_predicate = { ( is ~ article? | has ~ article? ~ (^"category" | ^"type") ~ of? ) ~ categorizations }
-has_property_predicate = { (has | with) ~ article? ~ property ~ of? ~ expression }
+is_a_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categorizations }
+has_property_predicate = { (has | with) ~ property ~ of? ~ expression }
 relation_predicate = { relation ~ subject }
 hyper_relation_predicate = { relation ~ categorizations }
 

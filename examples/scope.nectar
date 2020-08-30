@@ -1,0 +1,30 @@
+Every #country is a #location.
+
+	Given #country $country {
+		$country is a #location
+	}
+
+@United_States (aka @USA, @United_States_of_America) is a #country.
+
+@Texas is a #state in the @USA.
+
+Major_League_Soccer
+
+@Association_football (aka @football) is a #sport.
+
+Given $anything is in @United_States_of_America or @Canada {
+	@Football is also known as @soccer.
+
+	@Soccer has attendance_rank 3.
+}
+
+Given #time $time after {
+
+}
+
+
+Query {
+	Given @Texas {
+		@Football
+	}
+}

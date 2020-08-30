@@ -5,30 +5,12 @@ extern crate pest_consume;
 
 mod types;
 mod parser;
+mod interpreter;
 
 
 fn print(string: &str){
 	print!("{}", string);
     io::stdout().flush().unwrap();
-}
-
-fn print_type_of<T>(_: &T) {
-    println!("{}", std::any::type_name::<T>())
-}
-
-
-fn eval(contents: &str) {
-	match parser::parse(&contents) {
-		Ok(parsed) => {
-			for statement in parsed {
-				println!("-> {:?}", statement);
-				print_type_of(&statement);
-			}
-		},
-		Err(error) => {
-			println!("{}", error);
-		}
-	}
 }
 
 
@@ -39,7 +21,7 @@ fn repl() {
 	let stdin = io::stdin();
 	print("nectar $ ");
 	for line in stdin.lock().lines() {
-		eval(&line.unwrap());
+		interpreter::eval(&line.unwrap());
 		print("\nnectar $ ");
 	}
 }
@@ -55,7 +37,7 @@ fn main() {
 			let filename = &args[1];
 			let contents = fs::read_to_string(filename)
 				.expect("Couldn't read the file.");
-			eval(&contents)
+			interpreter::eval(&contents)
 		}
 		_ => {}
 	}

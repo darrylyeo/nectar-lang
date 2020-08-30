@@ -1,6 +1,6 @@
 use pest_consume::{match_nodes, Error, Parser};
 
-use super::types::*;
+pub use super::types::*;
 
 type Result<T> = std::result::Result<T, Error<Rule>>;
 type Node<'i> = pest_consume::Node<'i, Rule, ()>;

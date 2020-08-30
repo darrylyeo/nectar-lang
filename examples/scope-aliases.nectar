@@ -1,0 +1,48 @@
+scope {
+	@A is #X
+
+	scope {
+		@A aka @B
+
+		scope {
+			@B aka @C
+			@C is #Y
+
+			query {
+				@C is #X
+				@A is #Y
+				@A = @C
+			}
+		}
+	}
+}
+
+scope {
+	@A is #X
+	@B is #Y
+
+	scope {
+		@A aka @B
+		
+		query {
+			@A = @B
+		}
+	}
+
+	scope {
+		@A aka @C
+		
+		query {
+			@A = @B
+		}
+	}
+}
+
+scope {
+	@A is #Y
+	@B is #Z
+
+	scope {
+		@A aka @B
+	}
+}
