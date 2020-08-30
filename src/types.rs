@@ -28,7 +28,7 @@ pub type NectarRelation<'a> = &'a str;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum NectarPredicate<'a> {
-	IsA {
+	Is {
 		categorizations: Vec<NectarCategorization<'a>>
 	},
 	HasProperty {

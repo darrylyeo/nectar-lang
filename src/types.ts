@@ -21,7 +21,7 @@ namespace Nectar {
 
 	export type Relation = string
 
-	export type IsAPredicate = {
+	export type IsPredicate = {
 		categorizations: Categorization[]
 	}
 	export type HasPropertyPredicate = {
@@ -37,7 +37,7 @@ namespace Nectar {
 		relation: Relation,
 		categorizations: Categorization[]
 	}
-	export type Predicate = IsAPredicate | HasPropertyPredicate | RelationPredicate | HyperRelationPredicate
+	export type Predicate = IsPredicate | HasPropertyPredicate | RelationPredicate | HyperRelationPredicate
 
 	export type CompoundStatement = {
 		subjects: Subject[],

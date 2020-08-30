@@ -96,9 +96,9 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 
-	fn is_a_predicate(input: Node) -> Result<NectarPredicate> {
+	fn is_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[categorizations(categorizations)] => NectarPredicate::IsA { categorizations }
+			[categorizations(categorizations)] => NectarPredicate::Is { categorizations }
 		))
 	}
 	fn has_property_predicate(input: Node) -> Result<NectarPredicate> {
@@ -119,7 +119,7 @@ impl NectarParser {
 
 	fn predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[is_a_predicate(is_a_predicate)] => is_a_predicate,
+			[is_predicate(is_predicate)] => is_predicate,
 			[has_property_predicate(has_property_predicate)] => has_property_predicate,
 			[relation_predicate(relation_predicate)] => relation_predicate,
 			[hyper_relation_predicate(hyper_relation_predicate)] => hyper_relation_predicate

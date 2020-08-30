@@ -77,12 +77,12 @@ relation = {
 }
 
 
-is_a_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categorizations }
+is_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categorizations }
 has_property_predicate = { (has | with) ~ property ~ of? ~ expression }
 relation_predicate = { relation ~ subject }
 hyper_relation_predicate = { relation ~ categorizations }
 
-predicate = { is_a_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
+predicate = { is_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
 predicates = { predicate ~ (("," | and)? ~ predicate)* }
 
 
