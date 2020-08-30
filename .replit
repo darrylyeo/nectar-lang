@@ -1,4 +1,4 @@
 language = "deno"
 # language = "rust"
 
-run = "chmod +x run.sh; ./run.sh"
+run = "sh run.sh"
