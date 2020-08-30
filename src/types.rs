@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+
 pub type NectarNoun<'a> = &'a str;
 pub type NectarSubject<'a> = Vec<NectarNoun<'a>>;
 
@@ -23,7 +26,7 @@ pub type NectarProperty<'a> = &'a str;
 
 pub type NectarRelation<'a> = &'a str;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum NectarPredicate<'a> {
 	IsA {
 		categorizations: Vec<NectarCategorization<'a>>
@@ -43,9 +46,11 @@ pub enum NectarPredicate<'a> {
 	}
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct NectarCompoundStatement<'a> {
+    #[serde(borrow)]
 	pub subjects: Vec<NectarSubject<'a>>,
+    #[serde(borrow)]
 	pub predicates: Vec<NectarPredicate<'a>>
 }
 

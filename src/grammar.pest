@@ -28,7 +28,7 @@ non_keyword = _{ !(keyword) ~ identifier }
 
 expression = { string | quantity | number }
 
-noun = @{ article? ~ "@" ~ identifier | "@" ~ string }
+noun = @{(article ~ WHITESPACE)? ~ "@" ~ identifier | "@" ~ string }
 noun_disjunction = _{ noun ~ ("," ~ noun)* ~ (","? ~ or ~ noun)+ }
 noun_conjunction = _{ noun ~ ("," ~ noun)* ~ (","? ~ and ~ noun)+ }
 noun_alias = _{
@@ -45,7 +45,7 @@ subjects = {
 	subject ~ ("/" ~ subject)*
 }
 
-category = @{ article? ~ "#" ~ identifier }
+category = @{ (article ~ WHITESPACE)? ~ "#" ~ identifier }
 category_disjunction = { category ~ ("," ~ category)* ~ (","? ~ or ~ category)+ }
 category_conjunction = { category ~ ("," ~ category)* ~ (","? ~ and ~ category)+ }
 category_alias = _{
@@ -62,7 +62,7 @@ categorizations = {
 	categorization ~ ("/" ~ categorization)*
 }
 
-property = { article? ~ "#" ~ identifier }
+property = { article? ~ identifier }
 
 relation = {
 	^"to"? ~ (

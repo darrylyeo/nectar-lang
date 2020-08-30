@@ -160,6 +160,7 @@ pub fn eval<'a>(contents: &str) {
 
 			for compoundStatement in parsed {
 				println!("-> {:?}", compoundStatement);
+				// println!("-> {}", json::stringify(compoundStatement));
 				// print_type_of(&compoundStatement);
 
 				globalScope.evalCompoundStatement(compoundStatement);
