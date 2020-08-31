@@ -279,22 +279,22 @@ class Scope {
 		}
 	}
 
-	private evalCompoundStatement(subjects: Entity[], predicates: {type: string, predicate: Raw.Predicate}[]) {
+	private evalStatement(subjects: Entity[], predicates: {type: string, predicate: Raw.Predicate}[]) {
 		for(const {type, predicate} of predicates)
 			this.evalPredicate(subjects, type, predicate)
 	}
 
-	evalProgram(program: Raw.CompoundStatement[]) {
+	evalProgram(program: Raw.Statement[]) {
 		// Declare all noun entities and category entities
-		for(const compoundStatement of program){
-			this.declareNounEntities(compoundStatement.subjects)
-			this.declarePredicates(compoundStatement.predicates)
+		for(const statement of program){
+			this.declareNounEntities(statement.subjects)
+			this.declarePredicates(statement.predicates)
 		}
 
 		// Transform statements into relation, categorization, and rule entities
-		for(const compoundStatement of program){
-			const subjects = this.lookupNounEntities(compoundStatement.subjects)
-			this.evalCompoundStatement(subjects, compoundStatement.predicates)
+		for(const statement of program){
+			const subjects = this.lookupNounEntities(statement.subjects)
+			this.evalStatement(subjects, statement.predicates)
 
 			// for(const entity of subjects)
 			// 	console.log(entity)

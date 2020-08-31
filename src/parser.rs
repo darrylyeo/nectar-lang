@@ -150,15 +150,17 @@ impl NectarParser {
 		))
 	}
 
-	fn compound_statement(input: Node) -> Result<NectarCompoundStatement> {
+	fn statement(input: Node) -> Result<NectarCompoundStatement> {
 		Ok(match_nodes!(input.into_children();
 			[nouns(subjects), predicates(predicates)] =>
 				NectarCompoundStatement {subjects, predicates},
+			[nouns(subjects)] =>
+				NectarCompoundStatement {subjects, predicates: vec!()},
 		))
 	}
 	fn statements(input: Node) -> Result<Vec<NectarCompoundStatement>> {
 		Ok(match_nodes!(input.into_children();
-			[compound_statement(statements)..] =>
+			[statement(statements)..] =>
 				statements.collect(),
 		))
 	}

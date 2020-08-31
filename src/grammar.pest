@@ -35,17 +35,16 @@ noun_alias = _{
 	"(" ~ aka? ~ (noun | noun_disjunction) ~ ")" |
 	","? ~ aka ~ (noun | noun_disjunction) ~ ","?
 }
-
 noun_entity = {
+	noun ~ ("/" ~ noun)* |
 	noun ~ noun_alias?
 }
 nouns = {
-	noun_entity ~ ("," ~ noun_entity)* ~ (","? ~ and ~ noun_entity)+ |
-	noun_entity ~ (";" ~ noun_entity)* ~ (";"? ~ and ~ noun_entity)+ |
-	noun_entity ~ ("/" ~ noun_entity)*
+	noun_entity ~ (
+		("," ~ noun_entity)* ~ (","? ~ and ~ noun_entity)+ |
+		(";" ~ noun_entity)* ~ (";"? ~ and ~ noun_entity)+
+	)?
 }
-subjects = _{ nouns }
-objects = _{ nouns }
 
 category = @{ (article ~ WHITESPACE)? ~ "#" ~ identifier }
 category_disjunction = { category ~ ("," ~ category)* ~ (","? ~ or ~ category)+ }
@@ -54,14 +53,15 @@ category_alias = _{
 	"(" ~ aka? ~ (category | category_disjunction) ~ ")" |
 	","? ~ aka ~ (category | category_disjunction) ~ ","?
 }
-
 category_entity = {
+	category ~ ("/" ~ category)* |
 	category ~ category_alias?
 }
 categories = {
-	category_entity ~ ("," ~ category_entity)* ~ (","? ~ and ~ category_entity)+ |
-	category_entity ~ (";" ~ category_entity)* ~ (";"? ~ and ~ category_entity)+ |
-	category_entity ~ ("/" ~ category_entity)*
+	category_entity ~ (
+		("," ~ category_entity)* ~ (","? ~ and ~ category_entity)+ |
+		(";" ~ category_entity)* ~ (";"? ~ and ~ category_entity)+
+	)?
 }
 
 property = { article? ~ identifier }
@@ -89,7 +89,7 @@ relation = {
 aka_predicate = { is? ~ aka ~ (noun | noun_disjunction) }
 categorization_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categories }
 has_property_predicate = { (has | with) ~ property ~ of? ~ property_expression }
-relation_predicate = { relation ~ objects }
+relation_predicate = { relation ~ nouns }
 hyper_relation_predicate = { relation ~ categories }
 
 predicate = {
@@ -102,5 +102,5 @@ predicate = {
 predicates = { predicate ~ (("," | and)? ~ predicate)* }
 
 
-compound_statement = { subjects ~ predicates }
-statements = { compound_statement ~ (identifier* ~ "." ~ compound_statement)* }
+statement = { nouns ~ predicates? }
+statements = { statement ~ (identifier* ~ "." ~ statement)* }
