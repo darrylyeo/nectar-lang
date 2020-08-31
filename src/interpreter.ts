@@ -24,13 +24,18 @@ class Entity {
 	properties: Record<Identifier.Property, Raw.Value> = {}
 	// properties = new Map<PropertyEntity, Nectar.Value>()
 
-	toString(){
-		const aliases = [...this.aliases].filter(alias => alias != this.name)
+	toString(includeProperties = false){
 		return [
-			this.name ?? this.id,
-			aliases.length && `(${aliases.join("/")})`,
-			Object.keys(this.properties).length && this.toJSON("    ")
-		].filter(Boolean).join(' ')
+			this.aliases.size ? [...this.aliases].join("/") : this.name ?? this.id,
+			includeProperties && Object.keys(this.properties).length && this.toJSON("  ")
+		].filter(Boolean).join(" ")
+
+		// const aliases = [...this.aliases].filter(alias => alias != this.name)
+		// return [
+		// 	this.name ?? this.id,
+		// 	aliases.length && `(aka ${aliases.join(", ")})`,
+		// 	Object.keys(this.properties).length && this.toJSON("    ")
+		// ].filter(Boolean).join(" ")
 	}
 
 	toJSON(space?: string){
@@ -100,15 +105,17 @@ class RuleEntity extends Entity {
 
 class Scope {
 	parent?: Scope
-
-	// Entities defined in this scope
-	entities = new Set<Entity>()
 	
-	// Nouns declared in this scope
-	nouns: Record<Identifier.Noun, NounEntity> = {}
+	// Table of nouns declared in this scope
+	nounLookup: Record<Identifier.Noun, NounEntity> = {}
+	// Table of categories declared in this scope
+	categoryLookup: Record<Identifier.Category, CategoryEntity> = {}
 
-	// Categories declared in this scope
-	categories: Record<Identifier.Category, CategoryEntity> = {}
+	nouns = new Set<Entity>()
+	categories = new Set<Entity>()
+	categorizations = new Set<CategorizationEntity>()
+	relations = new Set<RelationEntity>()
+	hyperRelations = new Set<HyperRelationEntity>()
 	
 	lookup(type: Function, id: Identifier.Entity): Entity | undefined {
 		const lookupTable = this.getLookupTable(type)
@@ -117,14 +124,22 @@ class Scope {
 
 	private getLookupTable(type: Function): Record<string, Entity> {
 		switch(type){
+			case NounEntity: return this.nounLookup
+			case CategoryEntity: return this.categoryLookup
+			default: return {}
+		}
+	}
+	private getEntitySet(type: Function): Set<Entity> {
+		switch(type){
 			case NounEntity: return this.nouns
 			case CategoryEntity: return this.categories
+			default: return new Set()
 		}
-		return {}
 	}
 
 	private declareEntity(type: Function, ids: Raw.NounEntity | Raw.CategoryEntity) {
 		const lookupTable = this.getLookupTable(type)
+		const entities = this.getEntitySet(type)
 
 		// Find existing local entities for these nouns
 		const existingLocalEntities = ids
@@ -138,7 +153,7 @@ class Scope {
 				entity.references.add(reference)
 			for(const alias of otherEntity.aliases)
 				entity.aliases.add(alias)
-			this.entities.delete(otherEntity)
+			entities.delete(otherEntity)
 		}
 
 		// Declare references to the merged entity
@@ -158,7 +173,7 @@ class Scope {
 				}
 			}
 
-		this.entities.add(entity)
+		entities.add(entity)
 	}
 
 	private declareNounEntities(nouns: Raw.NounEntity[]){
@@ -218,40 +233,44 @@ class Scope {
 				const {property, expression} = predicate
 				for(const subject of subjects)
 					subject.properties[property] = this.evalExpression(subject, expression)
-				for(const subject of subjects)
-					console.log(subject, subject.properties)
 				return
 			}
 			case "categorization": {
 				const categories = this.lookupCategoryEntities(predicate.categories)
 				for(const subject of subjects)
-					for(const category of categories)
-						this.entities.add(new CategorizationEntity(
+					for(const category of categories){
+						const entity = new CategorizationEntity(
 							subject,
 							category
-						))
+						)
+						this.categorizations.add(entity)
+					}
 				return
 			}
 			case "relation": {
 				const objects = this.lookupNounEntities(predicate.objects)
 				for(const subject of subjects)
-					for(const object of objects)
-						this.entities.add(new RelationEntity(
+					for(const object of objects){
+						const entity = new RelationEntity(
 							subject,
 							predicate.relation,
 							object
-						))
+						)
+						this.relations.add(entity)
+					}
 				return
 			}
 			case "hyperRelation": {
 				const categories = this.lookupCategoryEntities(predicate.categories)
 				for(const subjectCategory of subjects)
-					for(const objectCategory of categories)
-						this.entities.add(new HyperRelationEntity(
+					for(const objectCategory of categories){
+						const entity = new HyperRelationEntity(
 							subjectCategory,
 							predicate.relation,
 							objectCategory
-						))
+						)
+						this.hyperRelations.add(entity)
+					}
 				return
 			}
 		}
@@ -283,6 +302,20 @@ class Scope {
 		// for(const entity of this.entities)
 		// 	console.log(entity.toString())
 	}
+
+	debug(){
+		return [
+			["Nouns", Array.from(this.nouns, noun => noun.toString(true))],
+			["Categories", Array.from(this.categories, String)],
+			["Categorizations", Array.from(this.categorizations, String)],
+			["Relations", Array.from(this.relations, String)],
+			["Hyper-Relations", Array.from(this.hyperRelations, String)],
+		].filter(x => x[1].length)
+
+		// console.log("Entities:")
+		// for(const entity of this.entities)
+		// 	console.log(entity.toString())
+	}
 }
 
 export class NectarInterpreter {
@@ -291,8 +324,7 @@ export class NectarInterpreter {
 	evaluate(contents: string){
 		try {
 			const program = JSON.parse(parse_to_json(contents))
-			console.log("->", program)
-
+			// console.log("->", program)
 			this.scope.evalProgram(program)
 		}catch(e){
 			console.error(e)
