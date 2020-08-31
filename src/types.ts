@@ -1,4 +1,6 @@
 namespace Identifier {
+	export type Entity = Noun | Category
+
 	export type Noun = string
 	export type Category = string
 	export type Relation = string
