@@ -1,15 +1,13 @@
 {
-  "name": "nectar-lang",
+  "name": "nectar_lang",
   "collaborators": [
     "Darryl Yeo <dev@darryl-yeo.com>"
   ],
   "version": "0.0.0",
   "files": [
-    "nectar_lib_bg.wasm",
-    "nectar_lib.js",
-    "nectar_lib.d.ts"
+    "nectar_lang_bg.wasm",
+    "nectar_lang.js",
+    "nectar_lang_bg.js"
   ],
-  "module": "nectar_lib.js",
-  "types": "nectar_lib.d.ts",
-  "sideEffects": false
+  "main": "nectar_lang.js"
 }

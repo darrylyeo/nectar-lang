@@ -2,7 +2,7 @@
 [ -x ~/.deno/bin/deno ] || curl -fsSL https://deno.land/x/install/install.sh | sh > /dev/null
 
 # Run Deno interpreter
-~/.deno/bin/deno run --allow-read --allow-env --unstable src/main.ts
+~/.deno/bin/deno run --allow-read --allow-env --allow-net --unstable src/main.ts
 
 # -----
 

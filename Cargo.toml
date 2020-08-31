@@ -1,5 +1,5 @@
 [package]
-name = "nectar-lang"
+name = "nectar_lang"
 version = "0.0.0"
 authors = ["Darryl Yeo <dev@darryl-yeo.com>"]
 edition = "2018"

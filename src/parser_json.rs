@@ -17,7 +17,9 @@ pub fn parse_to_json(contents: &str) -> String {
 				}).to_string()
 			},
 
-		Err(error) =>
-			error.to_string()
+		Err(error) => serde_json::json!({
+			"type": "error",
+			"message": error.to_string()
+		}).to_string()
 	}
 }

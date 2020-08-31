@@ -24,6 +24,9 @@ namespace Raw {
 	export type PropertyExpression = string
 	// export enum PropertyExpression {}
 
+	export type AkaPredicate = {
+		nouns: NounEntity
+	}
 	export type HasPropertyPredicate = {
 		property: Identifier.Property,
 		expression: PropertyExpression

@@ -31,6 +31,9 @@ pub type NectarRelation<'a> = &'a str;
 #[derive(Debug, Serialize)]
 #[serde(tag = "type", content = "predicate", rename_all = "camelCase")]
 pub enum NectarPredicate<'a> {
+	Aka {
+		nouns: NectarNounEntity<'a>
+	},
 	HasProperty {
 		property: NectarProperty<'a>,
 		expression: &'a str,

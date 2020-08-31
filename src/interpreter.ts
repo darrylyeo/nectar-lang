@@ -208,6 +208,9 @@ class Scope {
 
 	private declarePredicate(type: string, predicate: Raw.Predicate) {
 		switch(type){
+			case "aka":
+				this.declareEntity(NounEntity, predicate.nouns)
+				return
 			case "hasProperty":
 				this.declareProperty(predicate.property)
 				return
@@ -322,12 +325,22 @@ export class NectarInterpreter {
 	scope = new Scope()
 
 	evaluate(contents: string){
-		try {
-			const program = JSON.parse(parse_to_json(contents))
-			// console.log("->", program)
-			this.scope.evalProgram(program)
-		}catch(e){
-			console.error(e)
-		}
+		const program = JSON.parse(parse_to_json(contents))
+		if(program.type === "error")
+			throw program.message
+
+		// console.log("->", program)
+		this.scope.evalProgram(program)
+	}
+
+	debug(){
+		// Print a table of the current state
+		console.log(
+			// @ts-ignore
+			"\n" + this.scope.debug().map(([k, [v, ...vs]]) =>
+				// [(k + ': ').padStart(18) + v, ...vs].join("\n" + " ".repeat(18))
+				[(k + ': ').padStart(18) + v, ...vs].join("\n").replace(/\n/g, "\n" + " ".repeat(18))
+			).join("\n\n")
+		)
 	}
 }

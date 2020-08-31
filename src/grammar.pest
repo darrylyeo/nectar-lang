@@ -86,12 +86,19 @@ relation = {
 }
 
 
+aka_predicate = { is? ~ aka ~ (noun | noun_disjunction) }
 categorization_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categories }
 has_property_predicate = { (has | with) ~ property ~ of? ~ property_expression }
 relation_predicate = { relation ~ objects }
 hyper_relation_predicate = { relation ~ categories }
 
-predicate = { categorization_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
+predicate = {
+	aka_predicate |
+	categorization_predicate |
+	has_property_predicate |
+	relation_predicate |
+	hyper_relation_predicate
+}
 predicates = { predicate ~ (("," | and)? ~ predicate)* }
 
 

@@ -23,15 +23,13 @@ export async function repl(){
 			interpreter = new NectarInterpreter()
 		else if(line === "exit" || line === "quit")
 			return
-		else
+		else try {
 			interpreter.evaluate(line)
-
-		// Print a table of the current state
-		// @ts-ignore
-		console.log("\n" + interpreter.scope.debug().map(([k, [v, ...vs]]) =>
-			// [(k + ': ').padStart(18) + v, ...vs].join("\n" + " ".repeat(18))
-			[(k + ': ').padStart(18) + v, ...vs].join("\n").replace(/\n/g, "\n" + "   ".repeat(18))
-		).join("\n\n"))
+			interpreter.debug()
+		}
+		catch(e){
+			console.error(e)
+		}
 
 		print("\nnectar $ ")
 	}

@@ -100,6 +100,12 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 
+	fn aka_predicate(input: Node) -> Result<NectarNounEntity> {
+		Ok(match_nodes!(input.into_children();
+			[noun_entity(noun_entity)] =>
+				noun_entity
+		))
+	}
 	fn categorization_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
 			[categories(categories)] =>
