@@ -35,7 +35,7 @@ pub struct NectarEntity<'a> {
 // }
 
 // pub type NectarCategoryAliases<'a> = BTreeSet<NectarCategory<'a>>;
-// pub struct NectarCategorization<'a> {
+// pub struct NectarCategoryEntity<'a> {
 // 	aliases: NectarCategoryAliases<'a>,
 // 	parentAliases: NectarCategoryAliases<'a>
 // }
@@ -53,7 +53,7 @@ pub struct NectarScope<'a> {
 	// Entities defined in this scope
 	entities: BTreeSet<Box<NectarEntity<'a>>>,
 
-	// categories: HashMap<NectarCategory<'a>, NectarCategorization<'a>>,
+	// categories: HashMap<NectarCategory<'a>, NectarCategoryEntity<'a>>,
 }
 impl<'a> NectarScope<'a> {
 	fn lookup(&self, noun: &NectarNoun<'a>) -> Option<&&Box<NectarEntity<'a>>> {
@@ -72,7 +72,7 @@ impl<'a> NectarScope<'a> {
 		self.lookupTable.get(noun)
 	}
 
-	fn evalSubject(&self, subject: &NectarSubject<'a>) -> Box<NectarEntity<'a>> {
+	fn evalSubject(&self, subject: &NectarNounEntity<'a>) -> Box<NectarEntity<'a>> {
 		// let aliases: NectarCategoryAliases = subject
 		// 	.filter(|noun| entities.contains_key(noun))
 		// 	.flatMap(|noun| entities.get(noun))
@@ -133,7 +133,7 @@ impl<'a> NectarScope<'a> {
 		// }
 	}
 
-	fn evalSubjects(&self, subjects: Vec<NectarSubject<'a>>) -> BTreeSet<Box<NectarEntity<'a>>> {
+	fn evalSubjects(&self, subjects: Vec<NectarNounEntity<'a>>) -> BTreeSet<Box<NectarEntity<'a>>> {
 		subjects.into_iter()
 			.map(|subject| self.evalSubject(&subject))
 			.collect()
@@ -143,10 +143,10 @@ impl<'a> NectarScope<'a> {
 		let entities = &self.evalSubjects(compoundStatement.subjects);
 		// for predicate in compoundStatement.predicates {
 		// 	match predicate {
-		// 		IsA { categorizations } => NectarStatement,
-		// 		HasProperty { property, expression } => ,
-		// 		Relation { relation, object } => ,
-		// 		HyperRelation { relation, categorizations } => 
+		// 		is { categories } => NectarStatement,
+		// 		hasProperty { property, expression } => ,
+		// 		relation { relation, object } => ,
+		// 		hyperRelation { relation, categories } => 
 		// 	}
 		// }
 	}

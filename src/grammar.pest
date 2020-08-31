@@ -26,7 +26,7 @@ aka = _{ ^"aka" | ^"alias" | (^"also" | ^"better" | ^"commonly" | ^"otherwise" |
 keyword = _{ article | and | or | is | has | of | with | aka }
 non_keyword = _{ !(keyword) ~ identifier }
 
-expression = { string | quantity | number }
+property_expression = { string | quantity | number }
 
 noun = @{(article ~ WHITESPACE)? ~ "@" ~ identifier | "@" ~ string }
 noun_disjunction = _{ noun ~ ("," ~ noun)* ~ (","? ~ or ~ noun)+ }
@@ -36,14 +36,16 @@ noun_alias = _{
 	","? ~ aka ~ (noun | noun_disjunction) ~ ","?
 }
 
-subject = {
+noun_entity = {
 	noun ~ noun_alias?
 }
-subjects = {
-	subject ~ ("," ~ subject)* ~ (","? ~ and ~ subject)+ |
-	subject ~ (";" ~ subject)* ~ (";"? ~ and ~ subject)+ |
-	subject ~ ("/" ~ subject)*
+nouns = {
+	noun_entity ~ ("," ~ noun_entity)* ~ (","? ~ and ~ noun_entity)+ |
+	noun_entity ~ (";" ~ noun_entity)* ~ (";"? ~ and ~ noun_entity)+ |
+	noun_entity ~ ("/" ~ noun_entity)*
 }
+subjects = _{ nouns }
+objects = _{ nouns }
 
 category = @{ (article ~ WHITESPACE)? ~ "#" ~ identifier }
 category_disjunction = { category ~ ("," ~ category)* ~ (","? ~ or ~ category)+ }
@@ -53,13 +55,13 @@ category_alias = _{
 	","? ~ aka ~ (category | category_disjunction) ~ ","?
 }
 
-categorization = {
+category_entity = {
 	category ~ category_alias?
 }
-categorizations = {
-	categorization ~ ("," ~ categorization)* ~ (","? ~ and ~ categorization)+ |
-	categorization ~ (";" ~ categorization)* ~ (";"? ~ and ~ categorization)+ |
-	categorization ~ ("/" ~ categorization)*
+categories = {
+	category_entity ~ ("," ~ category_entity)* ~ (","? ~ and ~ category_entity)+ |
+	category_entity ~ (";" ~ category_entity)* ~ (";"? ~ and ~ category_entity)+ |
+	category_entity ~ ("/" ~ category_entity)*
 }
 
 property = { article? ~ identifier }
@@ -72,17 +74,24 @@ relation = {
     	^"represent" |
     	^"works with" |
     	^"compiles to" |
-		^"says"
+		^"says" |
+		^"loves" |
+		^"likes" |
+		^"made of" |
+		^"works for" |
+		^"made of" |
+		^"made of" |
+		^"made of"
     )
 }
 
 
-is_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categorizations }
-has_property_predicate = { (has | with) ~ property ~ of? ~ expression }
-relation_predicate = { relation ~ subject }
-hyper_relation_predicate = { relation ~ categorizations }
+categorization_predicate = { (is | has ~ (^"category" | ^"type") ~ of?) ~ categories }
+has_property_predicate = { (has | with) ~ property ~ of? ~ property_expression }
+relation_predicate = { relation ~ objects }
+hyper_relation_predicate = { relation ~ categories }
 
-predicate = { is_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
+predicate = { categorization_predicate | has_property_predicate | relation_predicate | hyper_relation_predicate }
 predicates = { predicate ~ (("," | and)? ~ predicate)* }
 
 

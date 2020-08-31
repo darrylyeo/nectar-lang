@@ -56,35 +56,39 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 
-	fn expression(input: Node) -> Result<&str> {
+	fn property_expression(input: Node) -> Result<&str> {
 		Ok(input.as_str())
 	}
 
 	fn noun(input: Node) -> Result<NectarNoun> {
 		Ok(input.as_str())
 	}
-	fn subject(input: Node) -> Result<NectarSubject> {
+	fn noun_entity(input: Node) -> Result<NectarNounEntity> {
 		Ok(match_nodes!(input.into_children();
-			[noun(nouns)..] => nouns.collect()
+			[noun(nouns)..] =>
+				nouns.collect()
 		))
 	}
-	fn subjects(input: Node) -> Result<Vec<NectarSubject>> {
+	fn nouns(input: Node) -> Result<Vec<NectarNounEntity>> {
 		Ok(match_nodes!(input.into_children();
-			[subject(subjects)..] => subjects.collect()
+			[noun_entity(nouns)..] =>
+				nouns.collect()
 		))
 	}
 
 	fn category(input: Node) -> Result<NectarCategory> {
 		Ok(input.as_str())
 	}
-	fn categorization(input: Node) -> Result<NectarCategorization> {
+	fn category_entity(input: Node) -> Result<NectarCategoryEntity> {
 		Ok(match_nodes!(input.into_children();
-			[category(categories)..] => categories.collect()
+			[category(categories)..] =>
+				categories.collect()
 		))
 	}
-	fn categorizations(input: Node) -> Result<Vec<NectarCategorization>> {
+	fn categories(input: Node) -> Result<Vec<NectarCategoryEntity>> {
 		Ok(match_nodes!(input.into_children();
-			[categorization(categorizations)..] => categorizations.collect()
+			[category_entity(categories)..] =>
+				categories.collect()
 		))
 	}
 
@@ -96,49 +100,60 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 
-	fn is_predicate(input: Node) -> Result<NectarPredicate> {
+	fn categorization_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[categorizations(categorizations)] => NectarPredicate::Is { categorizations }
+			[categories(categories)] =>
+				NectarPredicate::Categorization { categories }
 		))
 	}
 	fn has_property_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[property(property), expression(expression)] => NectarPredicate::HasProperty { property, expression }
+			[property(property), property_expression(expression)] =>
+				NectarPredicate::HasProperty { property, expression }
 		))
 	}
 	fn relation_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[relation(relation), subject(object)] => NectarPredicate::Relation { relation, object }
+			[relation(relation), nouns(objects)] =>
+				NectarPredicate::Relation { relation, objects }
 		))
 	}
 	fn hyper_relation_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[relation(relation), categorizations(categorizations)] => NectarPredicate::HyperRelation { relation, categorizations }
+			[relation(relation), categories(categories)] =>
+				NectarPredicate::HyperRelation { relation, categories }
 		))
 	}
 
 	fn predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[is_predicate(is_predicate)] => is_predicate,
-			[has_property_predicate(has_property_predicate)] => has_property_predicate,
-			[relation_predicate(relation_predicate)] => relation_predicate,
-			[hyper_relation_predicate(hyper_relation_predicate)] => hyper_relation_predicate
+			[categorization_predicate(categorization_predicate)] =>
+				categorization_predicate,
+			[has_property_predicate(has_property_predicate)] =>
+				has_property_predicate,
+			[relation_predicate(relation_predicate)] =>
+				relation_predicate,
+			[hyper_relation_predicate(hyper_relation_predicate)] =>
+				hyper_relation_predicate
 		))
 	}
 	fn predicates(input: Node) -> Result<Vec<NectarPredicate>> {
 		Ok(match_nodes!(input.into_children();
-			[predicate(predicates)..] => predicates.collect()
+			[predicate(predicates)..] =>
+				predicates.collect()
 		))
 	}
 
 	fn compound_statement(input: Node) -> Result<NectarCompoundStatement> {
 		Ok(match_nodes!(input.into_children();
-			[subjects(subjects), predicates(predicates)] => NectarCompoundStatement {subjects, predicates},
+			[nouns(subjects), predicates(predicates)] =>
+				NectarCompoundStatement {subjects, predicates},
 		))
 	}
 	fn statements(input: Node) -> Result<Vec<NectarCompoundStatement>> {
 		Ok(match_nodes!(input.into_children();
-			[compound_statement(statements)..] => statements.collect(),
+			[compound_statement(statements)..] =>
+				statements.collect(),
 		))
 	}
 }

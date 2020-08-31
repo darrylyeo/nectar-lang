@@ -1,51 +1,46 @@
-namespace Nectar {
+namespace Identifier {
 	export type Noun = string
-	export type Subject = Noun[]
-
 	export type Category = string
-	export type Categorization = Category[]
+	export type Relation = string
 
 	export type Unit = string
+	export type Property = string
+}
+
+namespace Raw {
+	export type NounEntity = Identifier.Noun[]
+
+	export type CategoryEntity = Identifier.Category[]
+
 	export type Quantity = {
 		number: number,
-		unit: Unit
+		unit: Identifier.Unit
 	}
 
 	export type Value = number | string | Quantity
 
-	export type Expression = {
-		
-	}
+	export type PropertyExpression = string
+	// export enum PropertyExpression {}
 
-	export type Property = string
-
-	export type Relation = string
-
-	export type IsPredicate = {
-		categorizations: Categorization[]
-	}
 	export type HasPropertyPredicate = {
-		property: Property,
-		expression: string,
-		// expression: Expression
+		property: Identifier.Property,
+		expression: PropertyExpression
+	}
+	export type CategoryPredicate = {
+		categories: CategoryEntity[]
 	}
 	export type RelationPredicate = {
-		relation: Relation,
-		object: Subject
+		relation: Identifier.Relation,
+		objects: NounEntity[]
 	}
 	export type HyperRelationPredicate = {
-		relation: Relation,
-		categorizations: Categorization[]
+		relation: Identifier.Relation,
+		objectCategories: CategoryEntity[]
 	}
-	export type Predicate = IsPredicate | HasPropertyPredicate | RelationPredicate | HyperRelationPredicate
+	export type Predicate = HasPropertyPredicate | CategoryPredicate | RelationPredicate | HyperRelationPredicate
 
 	export type CompoundStatement = {
-		subjects: Subject[],
-		predicates: Predicate[]
-	}
-
-	export type Statement = {
-		subject: Subject,
-		predicate: Predicate
+		subjects: NounEntity[],
+		predicates: [string, Predicate][]
 	}
 }
