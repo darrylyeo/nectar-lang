@@ -2,12 +2,12 @@ import { parse_to_json } from "../pkg/nectar_lib.js"
 import { Identifier, Raw } from "./types.ts"
 
 class Entity {
-	static uid = 0;
+	static uid = 0
 	static generateID(){
 		return ++this.uid
 	}
 
-	id = Entity.generateID();
+	id = Entity.generateID()
 
 	// Canonical name for the entity (defaults to first)
 	constructor(
@@ -15,14 +15,14 @@ class Entity {
 	){}
 
 	// Ids this entity is known by
-	aliases = new Set<Identifier.Entity>();
+	aliases = new Set<Identifier.Entity>()
 
 	// Entities referenced in ancestor scopes
-	references = new Set<Entity>();
+	references = new Set<Entity>()
 
 	// Properties
-	properties: Record<Identifier.Property, Raw.Value> = {};
-	// properties = new Map<PropertyEntity, Nectar.Value>();
+	properties: Record<Identifier.Property, Raw.Value> = {}
+	// properties = new Map<PropertyEntity, Nectar.Value>()
 
 	toString(){
 		const aliases = [...this.aliases].filter(alias => alias != this.name)
@@ -39,15 +39,15 @@ class Entity {
 }
 
 class NounEntity extends Entity {
-	references = new Set<NounEntity>();
+	references = new Set<NounEntity>()
 }
 
 class CategoryEntity extends Entity {
-	references = new Set<CategoryEntity>();
+	references = new Set<CategoryEntity>()
 }
 
 class RelationEntity extends Entity {
-	references = new Set<RelationEntity>();
+	references = new Set<RelationEntity>()
 
 	constructor(
 		public subject: NounEntity,
@@ -63,7 +63,7 @@ class RelationEntity extends Entity {
 }
 
 class CategorizationEntity extends Entity {
-	references = new Set<RelationEntity>();
+	references = new Set<RelationEntity>()
 
 	constructor(
 		public subject: NounEntity,
@@ -78,7 +78,7 @@ class CategorizationEntity extends Entity {
 }
 
 class HyperRelationEntity extends Entity {
-	references = new Set<HyperRelationEntity>();
+	references = new Set<HyperRelationEntity>()
 	
 	constructor(
 		public subjectCategory: CategoryEntity,
@@ -90,7 +90,7 @@ class HyperRelationEntity extends Entity {
 }
 
 class RuleEntity extends Entity {
-	references = new Set<HyperRelationEntity>();
+	references = new Set<HyperRelationEntity>()
 	
 	constructor(
 	){
@@ -99,16 +99,16 @@ class RuleEntity extends Entity {
 }
 
 class Scope {
-	parent?: Scope;
+	parent?: Scope
 
 	// Entities defined in this scope
-	entities = new Set<Entity>();
+	entities = new Set<Entity>()
 	
 	// Nouns declared in this scope
-	nouns: Record<Identifier.Noun, NounEntity> = {};
+	nouns: Record<Identifier.Noun, NounEntity> = {}
 
 	// Categories declared in this scope
-	categories: Record<Identifier.Category, CategoryEntity> = {};
+	categories: Record<Identifier.Category, CategoryEntity> = {}
 	
 	lookup(type: Function, id: Identifier.Entity): Entity | undefined {
 		const lookupTable = this.getLookupTable(type)
@@ -286,7 +286,7 @@ class Scope {
 }
 
 export class NectarInterpreter {
-	scope = new Scope();
+	scope = new Scope()
 
 	evaluate(contents: string){
 		try {
