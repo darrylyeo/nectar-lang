@@ -3,15 +3,47 @@ use serde::{Serialize};
 
 pub type NectarNoun<'a> = &'a str;
 pub type NectarNounEntity<'a> = Vec<NectarNoun<'a>>;
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "items", rename_all = "camelCase")]
+pub enum NectarNounJunction<'a> {
+	Disjunction(Vec<NectarNoun<'a>>),
+	Conjunction(Vec<NectarNoun<'a>>)
+}
 
 pub type NectarCategory<'a> = &'a str;
 pub type NectarCategoryEntity<'a> = Vec<NectarCategory<'a>>;
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "items", rename_all = "camelCase")]
+pub enum NectarCategoryJunction<'a> {
+	Disjunction(Vec<NectarCategory<'a>>),
+	Conjunction(Vec<NectarCategory<'a>>)
+}
 
 pub type NectarUnit<'a> = &'a str;
 
 #[derive(Debug, Serialize)]
-#[serde(tag = "type", content = "predicate", rename_all = "camelCase")]
-pub enum NectarValue<'a> {
+#[serde(rename_all = "camelCase")]
+pub enum NectarComparator {
+	EqualTo,
+	LessThan,
+	GreaterThan,
+	LessThanOrEqualTo,
+	GreaterThanOrEqualTo
+}
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "items", rename_all = "camelCase")]
+pub enum NectarComparatorJunction {
+	Disjunction(Vec<NectarComparator>)
+}
+
+pub type NectarProperty<'a> = &'a str;
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "expression", rename_all = "camelCase")]
+pub enum NectarPropertyExpression<'a> {
+	Reference {
+		noun: NectarNoun<'a>,
+		property: NectarProperty<'a>
+	},
 	Number(f64),
 	String(&'a str),
 	Quantity {
@@ -19,12 +51,12 @@ pub enum NectarValue<'a> {
 		unit: NectarUnit<'a>
 	}
 }
-
-pub enum NectarExpression<'a> {
-	Value(NectarValue<'a>)
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "items", rename_all = "camelCase")]
+pub enum NectarPropertyExpressionJunction<'a> {
+	Disjunction(Vec<NectarPropertyExpression<'a>>),
+	Conjunction(Vec<NectarPropertyExpression<'a>>)
 }
-
-pub type NectarProperty<'a> = &'a str;
 
 pub type NectarRelation<'a> = &'a str;
 
@@ -36,8 +68,7 @@ pub enum NectarPredicate<'a> {
 	},
 	HasProperty {
 		property: NectarProperty<'a>,
-		expression: &'a str,
-		// expression: NectarExpression<'a>
+		expression: NectarPropertyExpression<'a>
 	},
 	Categorization {
 		categories: Vec<NectarCategoryEntity<'a>>
@@ -53,12 +84,36 @@ pub enum NectarPredicate<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct NectarCompoundStatement<'a> {
-    pub subjects: Vec<NectarNounEntity<'a>>,
-    pub predicates: Vec<NectarPredicate<'a>>
+#[serde(tag = "type", content = "query", rename_all = "camelCase")]
+pub enum NectarQuery<'a> {
+	#[serde(rename_all = "camelCase")]
+	Aka {
+		nouns_left: NectarNounJunction<'a>,
+		nouns_right: NectarNounJunction<'a>
+	},
+	#[serde(rename_all = "camelCase")]
+	PropertyComparison {
+		property_expressions_left: NectarPropertyExpressionJunction<'a>,
+		comparators: NectarComparatorJunction,
+		property_expressions_right: NectarPropertyExpressionJunction<'a>
+	},
+	Categorization {
+		nouns: NectarNounJunction<'a>,
+		categories: NectarCategoryJunction<'a>
+	},
+	Relation {
+		subjects: NectarNounJunction<'a>,
+		relation: NectarRelation<'a>,
+		objects: NectarNounJunction<'a>,
+	}
 }
 
-// pub struct NectarStatement<'a> {
-// 	subject: NectarNounEntity<'a>,
-// 	predicate: NectarPredicate<'a>
-// }
+#[derive(Debug, Serialize)]
+#[serde(tag = "type", content = "statement", rename_all = "camelCase")]
+pub enum NectarStatement<'a> {
+	Declaration {
+		subjects: Vec<NectarNounEntity<'a>>,
+		predicates: Vec<NectarPredicate<'a>>
+	},
+	Query(NectarQuery<'a>)
+}

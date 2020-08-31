@@ -103,6 +103,19 @@ class RuleEntity extends Entity {
 	}
 }
 
+type PropertyExpression =
+	(() => PropertyExpression) |
+	string |
+	number |
+	PropertyExpressionQuantity
+
+class PropertyExpressionQuantity {
+	constructor(
+		public number: number,
+		public unit: Identifier.Unit
+	){}
+}
+
 class Scope {
 	parent?: Scope
 	
@@ -202,8 +215,19 @@ class Scope {
 
 	}
 
-	private evalExpression(thisEntity: Entity, expression: string): string {
-		return expression
+	private evalExpression({type, expression}: Raw.PropertyExpression, thisEntity?: Entity): PropertyExpression {
+		switch(type){
+			case "reference":
+				return () => this.lookup(NounEntity, expression.noun)?.properties[expression.property] ?? ""
+			case "number":
+				return Number(expression)
+			case "string":
+				return expression
+			case "quantity":
+				return new PropertyExpressionQuantity(expression.number, expression.unit)
+			default:
+				return ""
+		}
 	}
 
 	private declarePredicate(type: string, predicate: Raw.Predicate) {
@@ -235,7 +259,7 @@ class Scope {
 			case "hasProperty": {
 				const {property, expression} = predicate
 				for(const subject of subjects)
-					subject.properties[property] = this.evalExpression(subject, expression)
+					subject.properties[property] = this.evalExpression(expression, subject)
 				return
 			}
 			case "categorization": {
@@ -279,22 +303,102 @@ class Scope {
 		}
 	}
 
-	private evalStatement(subjects: Entity[], predicates: {type: string, predicate: Raw.Predicate}[]) {
+	private evalDeclaration(subjects: Entity[], predicates: {type: string, predicate: Raw.Predicate}[]) {
 		for(const {type, predicate} of predicates)
 			this.evalPredicate(subjects, type, predicate)
 	}
 
-	evalProgram(program: Raw.Statement[]) {
+	private evalJunction<T>({type, items}: {type: string, items: T[]}, callback: (item: T) => boolean): boolean {
+		if(type === "disjunction")
+			return items.some(callback)
+		else if(type === "conjunction")
+			return items.every(callback)
+		else
+			return false
+	}
+
+	private evalQuery({type, query}: {type: string, query: Raw.Query}){
+		switch(type){
+			case "aka": {
+				const {nounsLeft, nounsRight} = query
+				return this.evalJunction<Raw.Noun>(nounsLeft, nounLeft =>
+					this.evalJunction<Raw.Noun>(nounsRight, nounRight =>
+						this.lookup(NounEntity, nounLeft) === this.lookup(NounEntity, nounRight)
+					)
+				)
+			}
+			case "propertyComparison": {
+				const {propertyExpressionsLeft, comparators, propertyExpressionsRight} = query
+				return this.evalJunction<Raw.PropertyExpression>(propertyExpressionsLeft, leftExp => {
+					const leftValue = this.evalExpression(leftExp)
+					return this.evalJunction<Raw.PropertyExpression>(propertyExpressionsRight, rightExp => {
+						const rightValue = this.evalExpression(rightExp)
+						return this.evalJunction<Raw.Comparator>(comparators, comparator => {
+							switch(comparator){
+								case "equalTo":
+									return leftValue === rightValue
+								case "lessThan":
+									return leftValue < rightValue
+								case "greaterThan":
+									return leftValue > rightValue
+								case "lessThanOrEqualTo":
+									return leftValue <= rightValue
+								case "greaterThanOrEqualTo":
+									return leftValue >= rightValue
+								default:
+									return false 
+							}
+						})
+					})
+				})
+			}
+			case "categorization": {
+				const {nouns, categories} = query
+				return this.evalJunction<Raw.Noun>(nouns, noun =>
+					this.evalJunction<Raw.Category>(categories, category => {
+						// TODO: Optimize
+						for(const categorization of this.categorizations)
+							if(noun === categorization.subject && category === categorization.category)
+								return true
+						return false
+					})
+				)
+			}
+			case "relation": {
+				const {subjects, relation, objects} = query
+				return this.evalJunction<Raw.Noun>(subjects, subject =>
+					this.evalJunction<Raw.Noun>(objects, object => {
+						// TODO: Optimize
+						for(const relation of this.relations)
+							if(subject === relation.subject && object === relation.object)
+								return true
+						return false
+					})
+				)
+			}
+		}
+	}
+
+	evalProgram(program: Raw.Declaration[]) {
+		// Distinguish declarations and queries
+		const declarations = []
+		const queries = []
+		for(const {type, statement} of program)
+			if(type === "declaration")
+				declarations.push(statement)
+			else if(type === "query")
+				queries.push(statement)
+		
 		// Declare all noun entities and category entities
-		for(const statement of program){
-			this.declareNounEntities(statement.subjects)
-			this.declarePredicates(statement.predicates)
+		for(const declaration of declarations){
+			this.declareNounEntities(declaration.subjects)
+			this.declarePredicates(declaration.predicates)
 		}
 
-		// Transform statements into relation, categorization, and rule entities
-		for(const statement of program){
-			const subjects = this.lookupNounEntities(statement.subjects)
-			this.evalStatement(subjects, statement.predicates)
+		// Transform declarations into relation, categorization, and rule entities
+		for(const declaration of declarations){
+			const subjects = this.lookupNounEntities(declaration.subjects)
+			this.evalDeclaration(subjects, declaration.predicates)
 
 			// for(const entity of subjects)
 			// 	console.log(entity)
@@ -302,8 +406,9 @@ class Scope {
 			// console.log("categories", this.categories)
 		}
 
-		// for(const entity of this.entities)
-		// 	console.log(entity.toString())
+		// Perform queries
+		const results = queries.map(query => this.evalQuery(query))
+		return results
 	}
 
 	debug(){
@@ -330,7 +435,7 @@ export class NectarInterpreter {
 			throw program.message
 
 		// console.log("->", program)
-		this.scope.evalProgram(program)
+		return this.scope.evalProgram(program)
 	}
 
 	debug(){
@@ -338,8 +443,8 @@ export class NectarInterpreter {
 		console.log(
 			// @ts-ignore
 			"\n" + this.scope.debug().map(([k, [v, ...vs]]) =>
-				// [(k + ': ').padStart(18) + v, ...vs].join("\n" + " ".repeat(18))
-				[(k + ': ').padStart(18) + v, ...vs].join("\n").replace(/\n/g, "\n" + " ".repeat(18))
+				// [(k + ": ").padStart(18) + v, ...vs].join("\n" + " ".repeat(18))
+				[(k + ": ").padStart(18) + v, ...vs].join("\n").replace(/\n/g, "\n" + " ".repeat(18))
 			).join("\n\n")
 		)
 	}

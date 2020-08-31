@@ -18,14 +18,19 @@ export async function repl(){
 	print("nectar $ ")
 
 	for await (const line of readLines(Deno.stdin)) {
-		if(line === ""){}
+		if(line === "")
+			interpreter.debug()
 		else if(line === "reset")
 			interpreter = new NectarInterpreter()
 		else if(line === "exit" || line === "quit")
 			return
 		else try {
-			interpreter.evaluate(line)
-			interpreter.debug()
+			const results = interpreter.evaluate(line)
+			if(results.length)
+				for(const result of results)
+					console.log("->", result)
+			else
+				interpreter.debug()
 		}
 		catch(e){
 			console.error(e)

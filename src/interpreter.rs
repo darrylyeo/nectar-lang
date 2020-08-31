@@ -139,11 +139,11 @@ impl<'a> NectarScope<'a> {
 			.collect()
 	}
 
-	fn evalCompoundStatement(&self, compoundStatement: NectarCompoundStatement<'a>){
+	fn evalCompoundStatement(&self, compoundStatement: NectarDeclaration<'a>){
 		let entities = &self.evalSubjects(compoundStatement.subjects);
 		// for predicate in compoundStatement.predicates {
 		// 	match predicate {
-		// 		is { categories } => NectarStatement,
+		// 		is { categories } => NectarDeclaration,
 		// 		hasProperty { property, expression } => ,
 		// 		relation { relation, object } => ,
 		// 		hyperRelation { relation, categories } => 
