@@ -42,7 +42,7 @@ comparator = { equal_to | less_than_or_equal_to | greater_than_or_equal_to | les
 comparator_disjunction = _{ comparator ~ (("," ~ comparator)* ~ (","? ~ or ~ comparator)+)? }
 
 
-property = { identifier }
+property = { non_keyword }
 a_property = _{ article? ~ property }
 
 property_expression = { a_property ~ of ~ a_noun | a_noun ~ a_property | string | quantity | number }
@@ -107,7 +107,7 @@ relation = {
 	^"likes" |
 //	(^"maps" | ^"reduces" | ^"transforms" | ^"translates" | ^"compiles" | ^"transpiles" | ^"adapts") ~ (^"into" | ^"to") |
 //	(^"lives" | ^"works" | ^"plays" | ^"made") ~ (^"in" | ^"at" | ^"for" | ^"with") |
-//	is? ~ article? ~ (
+//	article? ~ (
 //		^"type" |
 //		^"representation" |
 //		^"element" |
@@ -127,18 +127,18 @@ relation = {
 //		^"child" |
 //		^"contributor"
 //	) ~ ^"of" |
-//	is? ~ (
+//	(
 //		^"related" |
 //		^"married"
 //	) ~ ^"to" |
-//	is? ~ (
+//	(
 //		^"friends" |
 //		^"enemies" |
 //		^"acquaintances" |
 //		^"coworkers" |
 //		^"married"
 //	) ~ ^"with" |
-//	is? ~ (
+//	(
 //		^"created" |
 //		^"written" |
 //		^"spoken" |
@@ -160,25 +160,26 @@ relation = {
 //		^"sold" |
 //		^"adapted"
 //	) ~ (^"by" | ^"for" | ^"with") |
-//	is? ~ (
+//	(
 //		^"affected" |
 //		^"caused" |
 //		^"adopted"
 //	) ~ ^"by" |
-//	is? ~ (
+//	(
 //		^"affected" |
 //		^"caused" |
 //		^"adopted"
 //	) ~ ^"over" |
-	is? ~ article? ~ identifier ~ (^"about" | ^"above" | ^"across" | ^"after" | ^"against" | ^"among" | ^"around" | ^"at" | ^"before" | ^"behind" | ^"below" | ^"beside" | ^"between" | ^"by" | ^"down" | ^"during" | ^"for" | ^"from" | ^"in" | ^"inside" | ^"into" | ^"near" | ^"of" | ^"off" | ^"on" | ^"out" | ^"over" | ^"through" | ^"to" | ^"toward" | ^"under" | ^"up" | ^"with")
+	article? ~ identifier ~ (^"about" | ^"above" | ^"across" | ^"after" | ^"against" | ^"among" | ^"around" | ^"at" | ^"before" | ^"behind" | ^"below" | ^"beside" | ^"between" | ^"by" | ^"down" | ^"during" | ^"for" | ^"from" | ^"in" | ^"inside" | ^"into" | ^"near" | ^"of" | ^"off" | ^"on" | ^"out" | ^"over" | ^"through" | ^"to" | ^"toward" | ^"under" | ^"up" | ^"with")
 }
+is_relation = _{ is? ~ relation }
 
 
 aka_predicate = { is? ~ aka ~ noun_disjunction }
 has_property_predicate = { (does? ~ has | with)? ~ (a_property ~ of? ~ property_expression | property_expression ~ property) }
 categorization_predicate = { (is ~ (of? ~ article? ~ category_keyword)? | does? ~ has ~ article? ~ category_keyword ~ of?) ~ categories }
-relation_predicate = { relation ~ nouns }
-hyper_relation_predicate = { relation ~ categories }
+relation_predicate = { is_relation ~ nouns }
+hyper_relation_predicate = { is_relation ~ categories }
 
 predicate = {
 	aka_predicate |
@@ -209,7 +210,7 @@ categorization_query = {
 }
 relation_query = {
 	is ~ noun_junction ~ relation ~ noun_junction ~ "?"* |
-	noun_junction ~ relation ~ noun_junction ~ "?"+
+	noun_junction ~ is_relation ~ noun_junction ~ "?"+
 }
 
 
@@ -221,5 +222,5 @@ dimension = { predicate ~ "[" ~ dimension_slice* ~ "]" }
 
 scope = { identifier ~ "{" ~ statements? ~ "}" }
 
-statement = { (query ~ ("?" | "\n")?) | (declaration ~ ("." | "!"+ | "\n")?) | scope }
+statement = { (query ~ ("?" | "\n")?) | (declaration ~ ("." | ";" | "!"+ | "\n" | "," ~ (and | ^"while"))?) | scope }
 statements = { statement+ }
