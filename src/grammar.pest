@@ -64,6 +64,7 @@ noun_conjunction = { a_noun ~ (("," ~ a_noun)* ~ (","? ~ and ~ a_noun)+)? }
 noun_junction = { noun_disjunction | noun_conjunction }
 noun_alias = _{
 	"(" ~ aka? ~ noun_disjunction ~ ")" |
+	"(" ~ aka? ~ a_noun ~ ("," ~ a_noun)* ~ ")" |
 	","? ~ aka ~ noun_disjunction ~ ","?
 }
 noun_entity = {
@@ -85,6 +86,7 @@ category_conjunction = { a_category ~ ("," ~ a_category)* ~ ((","? ~ and ~ a_cat
 category_junction = { category_disjunction | category_conjunction }
 category_alias = _{
 	"(" ~ aka? ~ category_disjunction ~ ")" |
+	"(" ~ aka? ~ a_category ~ ("," ~ a_category)* ~ ")" |
 	","? ~ aka ~ category_disjunction ~ ","?
 }
 category_entity = {

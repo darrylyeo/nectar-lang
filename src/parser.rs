@@ -173,7 +173,17 @@ impl NectarParser {
 	fn category_entity(input: Node) -> Result<NectarCategoryEntity> {
 		Ok(match_nodes!(input.into_children();
 			[category(categories)..] =>
-				categories.collect()
+				categories.collect(),
+			[category(categories).., category_disjunction(category_disjunction)] =>
+				match category_disjunction {
+					NectarCategoryJunction::Disjunction(categories2) => {
+						let mut categories = categories.collect::<NectarCategoryEntity>();
+						categories.extend(categories2);
+						categories
+					},
+					_ =>
+						categories.collect()
+				},
 		))
 	}
 	fn categories(input: Node) -> Result<Vec<NectarCategoryEntity>> {
