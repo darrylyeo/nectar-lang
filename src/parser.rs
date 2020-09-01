@@ -27,7 +27,10 @@ impl NectarParser {
 		Ok(input.as_str())
 	}
 	fn string(input: Node) -> Result<&str> {
-		Ok(input.as_str())
+		Ok(match_nodes!(input.into_children();
+			[string_content(string_content)] =>
+				string_content
+		))
 	}
 
 	fn integer(input: Node) -> Result<f64> {
