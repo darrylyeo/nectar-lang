@@ -108,6 +108,8 @@ pub enum NectarQuery<'a> {
 	}
 }
 
+pub type NectarScopeName<'a> = &'a str;
+
 #[derive(Debug, Serialize)]
 #[serde(tag = "type", content = "statement", rename_all = "camelCase")]
 pub enum NectarStatement<'a> {
@@ -115,5 +117,9 @@ pub enum NectarStatement<'a> {
 		subjects: Vec<NectarNounEntity<'a>>,
 		predicates: Vec<NectarPredicate<'a>>
 	},
-	Query(NectarQuery<'a>)
+	Query(NectarQuery<'a>),
+	Scope {
+		name: NectarScopeName<'a>,
+		statements: Vec<NectarStatement<'a>>
+	}
 }

@@ -1,4 +1,4 @@
-WHITESPACE = _{ (" " | "\n" | NEWLINE)+ }
+WHITESPACE = _{ (" " | "\n" | "\t" | "\r" | NEWLINE)+ }
 alpha = @{ 'a'..'z' | 'A'..'Z' }
 digit = @{ '0'..'9' }
 
@@ -23,7 +23,7 @@ does = _{ ^"does" | ^"do" }
 of = _{ ^"of" }
 with = _{ ^"with" }
 aka = _{ ^"aka" | ^"alias" | (^"also" | ^"better" | ^"commonly" | ^"otherwise" | ^"widely")? ~ (^"called" | ^"known as" | ^"named" | ^"titled" | ^"goes by" | ^"nicknamed" | ^"referred to as") | or }
-category_keyword = _ { ^"category" | ^"type" }
+category_keyword = _{ ^"category" | ^"type" }
 
 keyword = _{ article | and | or | is | has | does | of | with | aka | category_keyword }
 non_keyword = _{ !(keyword) ~ identifier }
@@ -204,5 +204,10 @@ relation_query = {
 declaration = { nouns ~ predicates? }
 query = { aka_query | property_comparison_query | categorization_query | relation_query }
 
-statement = { query | declaration }
-statements = { statement ~ (identifier* ~ "." ~ statement)* }
+dimension_slice = { property_expression ~ "[" ~ statements ~ "]" ~ property_expression?  }
+dimension = { predicate ~ "[" ~ dimension_slice* ~ "]" }
+
+scope = { identifier ~ "{" ~ statements? ~ "}" }
+
+statement = { (query ~ ("?" | "\n")?) | (declaration ~ ("." | "!"+ | "\n")?) | scope }
+statements = { statement+ }

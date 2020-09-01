@@ -15,8 +15,9 @@ export async function repl(){
 
 	let interpreter = new NectarInterpreter()
 
-	print("nectar $ ")
+	print(`${interpreter.scope.nestedName} $ `)
 
+	let match
 	for await (const line of readLines(Deno.stdin)) {
 		if(line === "")
 			interpreter.debug()
@@ -24,6 +25,11 @@ export async function repl(){
 			interpreter = new NectarInterpreter()
 		else if(line === "exit" || line === "quit")
 			return
+		else if(match = line.trim().match(/^([a-z][a-z0-9_-]*)\s*{$/i))
+			interpreter.pushScope(match[1])
+		else if(line.trim() === "}")
+			interpreter.popScope()
+			interpreter.debug()
 		else try {
 			const results = interpreter.evaluate(line)
 			if(results.length)
@@ -36,6 +42,6 @@ export async function repl(){
 			console.error(e)
 		}
 
-		print("\nnectar $ ")
+		print(`\n${interpreter.scope.nestedName} $ `)
 	}
 }

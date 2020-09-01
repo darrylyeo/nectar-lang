@@ -2,7 +2,7 @@
 
 Hey, Repl.it-eers!
 
-I'm proud to announce Nectar, a flexible, human-friendly language that helps you encode any kind of knowledge straight from your stream of consciousness.
+I'm proud to announce Nectar, a flexible, human-friendly language that helps you record any kind of knowledge straight from your stream of consciousness.
 
 Here are just a few things that are possible with Nectar:
 * Keep an address book of people you've met and their connections
@@ -39,10 +39,10 @@ Nouns can be **aliased**. As long as a noun is aliased anywhere within a set of 
 The #planet @Mars (aka the @Red_Planet)
 	has name "Mars"
 	has color "red"
-	has rank 3
-	has an equatorial_radius of 6378.1 km
-	has an average_orbital_speed of 29.78 km/s
-	has a mass of 5.97237e24 kg.
+	has rank 4
+	has an equatorial_radius of 3396.2 km
+	has an average_orbital_speed of 24.007 km/s
+	has a mass of 6.4171e23 kg.
 ```
 
 If several of your objects start looking the same, you can define a **rule** or **schema** (not yet implemented):
@@ -59,10 +59,10 @@ Is @Nectar #human-friendly?
 @Nectar is invented by $who?
 What is @Earth?
 Does @Earth have an equatorial_radius greater than 6000 km?
-Is the rank of @Earth higher than the rank of @Mars?
+Is the rank of @Earth closer than the rank of @Mars?
 ```
 
-A scope {} allows you to deal with distinct fragments of graphs. Scopes can have any label, and any statements, rules or aliases declared within will only apply to the queries inside.
+A **`scope {}`** allows you to create and operate within a temporary graph fragment. Scopes are annotated with a label, and any statements, rules or aliases declared within it will only apply to the queries inside. This can be helpful for testing multiple scenarios on a common set of entities, especially if there are conflicts in terminology.
 
 ```
 parallel_universe {
@@ -102,26 +102,27 @@ To launch the Nectar REPL, run the following command line (or press "Run" on rep
 deno run --allow-read --allow-env --allow-net --unstable src/main.ts
 ```
 
-Type a statement or query, then hit ENTER. The REPL will show the query result or the current state
+Type a statement or query, then hit ENTER. If the line is empty or there are no query results to be shown, the REPL will show you all the entities (nouns, categories, categorizations, relations, and hyper-relations) that have been defined thus far.
+
+The REPL can also create and exit scopes dynamically. Type `scope_name {` to enter a new scope. Type `}` to exit the scope.
 
 # The Future of Nectar
 
-Since hypergraphs are an all-encompassing data structure, Nectar will be able to output query results to CSV, JSON, YAML, SQL, GraphQL schemas, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, graph visualizations and much more in the future!
+Since a hypergraph is an all-encompassing data structure, Nectar will be able to output query results to CSV, JSON, YAML, SQL, GraphQL schemas, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, graph visualizations and much more in the future!
 
 Features to add:
 * Pronouns like "it", "this", "they" to reference subject of previous statements
 * Modifier blocks that apply hyper-relations to a group of relations:
   * Timestamps and time ranges
-  * 
+  * Locations
 * Automated reasoning/logical inferences
 * Reactive properties
   * Bindings with JavaScript libraries like React, Vue, Svelte, RxJS
-* Jupyter
-* Make the grammar even more robust, comprehensive and on par with regular English
-* Add custom dictionaries of words to use within the grammar
+* Continue to make the grammar more comprehensive, robust, and closer to regular English
+  * Add custom dictionaries of words to use within the grammar
 * Intelligently apply contextual time ranges to statements based on past, present, and future tense
 
 
-Why "Nectar"?
+## Why "Nectar"?
 
 Nectar is fast as a hummingbird, resilient as a butterfly, and so fluid and rich in (syntactic) sugar that you can type it right from your stream of consciousness. Just as it's the definitive food source for bees, a foundational species within our biosphere, Nectar is the definitive source of all your data - the underlying con-nectar of everything within your tech ecosystem. How sweet is that?!

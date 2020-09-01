@@ -196,8 +196,13 @@ impl NectarParser {
 
 	fn aka_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[noun_entity(nouns)] =>
-				NectarPredicate::Aka {nouns}
+			[noun_disjunction(noun_disjunction)] =>
+				match noun_disjunction {
+					NectarNounJunction::Disjunction(nouns) =>
+						NectarPredicate::Aka {nouns},
+					_ =>
+						NectarPredicate::Aka {nouns: vec!()}
+				}
 		))
 	}
 	fn categorization_predicate(input: Node) -> Result<NectarPredicate> {
@@ -318,12 +323,21 @@ impl NectarParser {
 		))
 	}
 
+	fn scope(input: Node) -> Result<NectarStatement> {
+		Ok(match_nodes!(input.into_children();
+			[identifier(name), statements(statements)] =>
+				NectarStatement::Scope {name, statements}
+		))
+	}
+
 	fn statement(input: Node) -> Result<NectarStatement> {
 		Ok(match_nodes!(input.into_children();
 			[declaration(declaration)] =>
 				declaration,
 			[query(query)] =>
-				NectarStatement::Query(query)
+				NectarStatement::Query(query),
+			[scope(scope)] =>
+				scope
 		))
 	}
 	fn statements(input: Node) -> Result<Vec<NectarStatement>> {

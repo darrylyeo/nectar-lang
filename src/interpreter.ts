@@ -107,6 +107,7 @@ type PropertyExpression =
 	(() => PropertyExpression) |
 	string |
 	number |
+	boolean |
 	PropertyExpressionQuantity
 
 class PropertyExpressionQuantity {
@@ -117,7 +118,10 @@ class PropertyExpressionQuantity {
 }
 
 class Scope {
-	parent?: Scope
+	constructor(
+		public name: string,
+		public parent?: Scope
+	){}
 	
 	// Table of nouns declared in this scope
 	nounLookup: Record<Identifier.Noun, NounEntity> = {}
@@ -317,7 +321,8 @@ class Scope {
 			return false
 	}
 
-	private evalQuery({type, query}: {type: string, query: Raw.Query}){
+	private evalQuery({type, query}: {type: string, query: Raw.Query}): PropertyExpression {
+		console.log(query)
 		switch(type){
 			case "aka": {
 				const {nounsLeft, nounsRight} = query
@@ -376,18 +381,19 @@ class Scope {
 					})
 				)
 			}
+			default: return ""
 		}
 	}
 
-	evalProgram(program: Raw.Declaration[]) {
-		// Distinguish declarations and queries
+	evalStatements(program: Raw.Statement[]): PropertyExpression[] {
+		// Distinguish declarations from queries and scopes
 		const declarations = []
-		const queries = []
+		const nonDeclarations = []
 		for(const {type, statement} of program)
 			if(type === "declaration")
 				declarations.push(statement)
-			else if(type === "query")
-				queries.push(statement)
+			else
+				nonDeclarations.push(statement)
 		
 		// Declare all noun entities and category entities
 		for(const declaration of declarations){
@@ -405,9 +411,19 @@ class Scope {
 			// console.log("nouns", this.nouns)
 			// console.log("categories", this.categories)
 		}
+		
+		// Perform queries and evaluate inner scopes
+		const results = []
+		for(const {type, statement} of nonDeclarations)
+			if(type === "query"){
+				const query = statement
+				results.push(this.evalQuery(query))
+			}else if(type === "scope"){
+				const {name, statements} = statement
+				const scope = new Scope(name, this)
+				results.push(...scope.evalStatements(statements))
+			}
 
-		// Perform queries
-		const results = queries.map(query => this.evalQuery(query))
 		return results
 	}
 
@@ -424,18 +440,35 @@ class Scope {
 		// for(const entity of this.entities)
 		// 	console.log(entity.toString())
 	}
+
+	get nestedName(): string {
+		return (this.parent ? this.parent.nestedName + '/' : '') + this.name
+	}
 }
 
 export class NectarInterpreter {
-	scope = new Scope()
+	scope = new Scope("nectar")
 
 	evaluate(contents: string){
-		const program = JSON.parse(parse_to_json(contents))
-		if(program.type === "error")
-			throw program.message
+		const statements = JSON.parse(parse_to_json(contents))
+		if(statements.type === "error")
+			throw statements.message
 
-		// console.log("->", program)
-		return this.scope.evalProgram(program)
+		// console.log("->", statements)
+		return this.scope.evalStatements(statements)
+	}
+
+	// REPL mode only.
+	pushScope(name: string){
+		const scope = new Scope(name)
+		scope.parent = this.scope
+		this.scope = scope
+	}
+	popScope(){
+		if(this.scope.parent)
+			this.scope = this.scope.parent
+		else
+			throw "You're already in the root scope."
 	}
 
 	debug(){
