@@ -86,7 +86,7 @@ a [
 ]
 ```
 
-# Using Nectar
+## Using Nectar
 
 To run Nectar with a file e.g. hello.nectar, run the following command line:
 
@@ -94,7 +94,7 @@ To run Nectar with a file e.g. hello.nectar, run the following command line:
 deno run --allow-read --allow-env --allow-net --unstable src/hello.ts hello.nectar
 ```
 
-# Using the REPL
+## Using the REPL
 
 To launch the Nectar REPL, run the following command line (or press "Run" on repl.it):
 
@@ -106,9 +106,9 @@ Type a statement or query, then hit ENTER. If the line is empty or there are no 
 
 The REPL can also create and exit scopes dynamically. Type `scope_name {` to enter a new scope. Type `}` to exit the scope.
 
-# The Future of Nectar
+## The Future of Nectar
 
-Since a hypergraph is an all-encompassing data structure, Nectar will be able to output query results to CSV, JSON, YAML, SQL, GraphQL schemas, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, graph visualizations and much more in the future!
+Nectar strives to liberate your data from any one format or arbitrary structural limitation. With a hypergraph as its underlying, all-encompassing data structure, Nectar will be able to import from or output query results to CSV, JSON, YAML, SQL, GraphQL schemas, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, graph visualizations and much more in the future!
 
 Features to add:
 * Pronouns like "it", "this", "they" to reference subject of previous statements
@@ -121,6 +121,14 @@ Features to add:
 * Continue to make the grammar more comprehensive, robust, and closer to regular English
   * Add custom dictionaries of words to use within the grammar
 * Intelligently apply contextual time ranges to statements based on past, present, and future tense
+
+## The Making of Nectar
+
+The Nectar parser is created with [pest](https://pest.rs), a Rust library for creating PEGs (parsing expression grammars). Nectar's grammar is defined in `src/grammar.pest`. I used the `pest_consume` crate to convert the AST into Rust structs.
+
+Since this was my first time using Rust, I had a lot of trouble writing the interpreter (my attempt is found at `src/interpreter.ts`). I decided to start over using the more familiar TypeScript, and [attempted to port the pest grammar to `nearley.js`](https://repl.it/@nectarlang/nectar-lang-js). However, I ran into a lot of issues getting a `moo.js` lexer to work correctly.
+
+I ultimately settled on a hybrid approach using WebAssembly. I created a Rust library that uses the `serde` crate to serialize the original Rust struct-AST into JSON. I then used Second State's [ssvmup](https://secondstate.io/ssvm) to compile the Rust library to a WebAssembly binary targeting the TypeScript runtime Deno. From there, I was able to write the Nectar interpreter and REPL comfortably in TypeScript. Whew!
 
 
 ## Why "Nectar"?

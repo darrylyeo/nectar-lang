@@ -27,9 +27,10 @@ export async function repl(){
 			return
 		else if(match = line.trim().match(/^([a-z][a-z0-9_-]*)\s*{$/i))
 			interpreter.pushScope(match[1])
-		else if(line.trim() === "}")
+		else if(line.trim() === "}"){
 			interpreter.popScope()
 			interpreter.debug()
+		}
 		else try {
 			const results = interpreter.evaluate(line)
 			if(results.length)

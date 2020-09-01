@@ -42,31 +42,33 @@ comparator = { equal_to | less_than_or_equal_to | greater_than_or_equal_to | les
 comparator_disjunction = _{ comparator ~ (("," ~ comparator)* ~ (","? ~ or ~ comparator)+)? }
 
 
-property = { article? ~ identifier }
+property = { identifier }
+a_property = _{ article? ~ property }
 
-property_expression = { property ~ of ~ noun | noun ~ property | string | quantity | number }
+property_expression = { a_property ~ of ~ a_noun | a_noun ~ a_property | string | quantity | number }
 property_expression_disjunction = {
-	(property ~ of) ~ noun_disjunction |
+	(a_property ~ of) ~ noun_disjunction |
 	property_expression ~ (("," ~ property_expression)* ~ (","? ~ or ~ property_expression)+)?
 }
 property_expression_conjunction = {
-	(property ~ of) ~ noun_conjunction |
+	(a_property ~ of) ~ noun_conjunction |
 	property_expression ~ (("," ~ property_expression)* ~ (","? ~ and ~ property_expression)+)?
 }
 property_expression_junction = { property_expression_disjunction | property_expression_conjunction }
 
 
-noun = @{(article ~ WHITESPACE)? ~ "@" ~ identifier | "@" ~ string }
-noun_disjunction = { noun ~ (("," ~ noun)* ~ (","? ~ or ~ noun)+)? }
-noun_conjunction = { noun ~ (("," ~ noun)* ~ (","? ~ and ~ noun)+)? }
+noun = @{"@" ~ identifier | "@" ~ string }
+a_noun = _{ article? ~ noun }
+noun_disjunction = { a_noun ~ (("," ~ a_noun)* ~ (","? ~ or ~ a_noun)+)? }
+noun_conjunction = { a_noun ~ (("," ~ a_noun)* ~ (","? ~ and ~ a_noun)+)? }
 noun_junction = { noun_disjunction | noun_conjunction }
 noun_alias = _{
 	"(" ~ aka? ~ noun_disjunction ~ ")" |
 	","? ~ aka ~ noun_disjunction ~ ","?
 }
 noun_entity = {
-	noun ~ ("/" ~ noun)* |
-	noun ~ noun_alias?
+	a_noun ~ ("/" ~ a_noun)* |
+	a_noun ~ noun_alias?
 }
 nouns = {
 	noun_entity ~ (
@@ -75,20 +77,22 @@ nouns = {
 	)?
 }
 
-category = @{ (article ~ WHITESPACE)? ~ "#" ~ identifier }
-category_disjunction = { category ~ ("," ~ category)* ~ ((","? ~ or ~ category)+)? }
-category_conjunction = { category ~ ("," ~ category)* ~ ((","? ~ and ~ category)+)? }
+category = @{ "#" ~ identifier }
+a_category = _{ article? ~ category }
+category_disjunction = { a_category ~ ("," ~ a_category)* ~ ((","? ~ or ~ a_category)+)? }
+category_conjunction = { a_category ~ ("," ~ a_category)* ~ ((","? ~ and ~ a_category)+)? }
 category_junction = { category_disjunction | category_conjunction }
 category_alias = _{
 	"(" ~ aka? ~ category_disjunction ~ ")" |
 	","? ~ aka ~ category_disjunction ~ ","?
 }
 category_entity = {
-	category ~ ("/" ~ category)* |
-	category ~ category_alias?
+	a_category ~ ("/" ~ a_category)* |
+	a_category ~ category_alias?
 }
 categories = {
 	category_entity ~ (
+		category_entity |
 		("," ~ category_entity)* ~ (","? ~ and ~ category_entity)+ |
 		(";" ~ category_entity)* ~ (";"? ~ and ~ category_entity)+
 	)?
@@ -153,7 +157,7 @@ relation = {
 		^"distributed" |
 		^"sold" |
 		^"adapted"
-	) ~ (^"by" ~ ^"for" ~ ^"with") |
+	) ~ (^"by" | ^"for" | ^"with") |
 	is? ~ (
 		^"affected" |
 		^"caused" |
@@ -163,7 +167,7 @@ relation = {
 
 
 aka_predicate = { is? ~ aka ~ noun_disjunction }
-has_property_predicate = { (does? ~ has | with) ~ (property ~ of? ~ property_expression | property_expression ~ property) }
+has_property_predicate = { (does? ~ has | with) ~ (property ~ of? ~ property_expression | property_expression ~ a_property) }
 categorization_predicate = { (is ~ (of? ~ article? ~ category_keyword)? | does? ~ has ~ article? ~ category_keyword ~ of?) ~ categories }
 relation_predicate = { relation ~ nouns }
 hyper_relation_predicate = { relation ~ categories }
@@ -187,7 +191,7 @@ property_comparison_query = {
 	property_expression_junction ~ is? ~ comparator_disjunction? ~ property_expression_junction ~ "?"+ |
 	does ~ property_expression_junction ~ comparator_disjunction? ~ property_expression_junction ~ "?"* |
 	property_expression_junction ~ does? ~ comparator_disjunction? ~ property_expression_junction ~ "?"+ |
-	does? ~ noun_junction ~ has ~ property ~ comparator_disjunction? ~ property_expression_junction ~ "?"*
+	does? ~ noun_junction ~ has ~ a_property ~ comparator_disjunction? ~ property_expression_junction ~ "?"*
 }
 categorization_query = {
 	is ~ noun_junction ~ (of? ~ article? ~ category_keyword)? ~ category_junction ~ "?"* |
