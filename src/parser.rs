@@ -127,7 +127,17 @@ impl NectarParser {
 	fn noun_entity(input: Node) -> Result<NectarNounEntity> {
 		Ok(match_nodes!(input.into_children();
 			[noun(nouns)..] =>
-				nouns.collect()
+				nouns.collect(),
+			[noun(nouns).., noun_disjunction(noun_disjunction)] =>
+				match noun_disjunction {
+					NectarNounJunction::Disjunction(nouns2) => {
+						let mut nouns = nouns.collect::<NectarNounEntity>();
+						nouns.extend(nouns2);
+						nouns
+					},
+					_ =>
+						nouns.collect()
+				},
 		))
 	}
 	fn nouns(input: Node) -> Result<Vec<NectarNounEntity>> {
