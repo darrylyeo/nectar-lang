@@ -175,7 +175,7 @@ relation = {
 
 
 aka_predicate = { is? ~ aka ~ noun_disjunction }
-has_property_predicate = { (does? ~ has | with) ~ (property ~ of? ~ property_expression | property_expression ~ a_property) }
+has_property_predicate = { (does? ~ has | with)? ~ (a_property ~ of? ~ property_expression | property_expression ~ property) }
 categorization_predicate = { (is ~ (of? ~ article? ~ category_keyword)? | does? ~ has ~ article? ~ category_keyword ~ of?) ~ categories }
 relation_predicate = { relation ~ nouns }
 hyper_relation_predicate = { relation ~ categories }
@@ -187,7 +187,7 @@ predicate = {
 	relation_predicate |
 	hyper_relation_predicate
 }
-predicates = { predicate ~ (("," | and)? ~ predicate)* }
+predicates = { predicate ~ (","? ~ and? ~ predicate)* }
 
 
 aka_query = {
