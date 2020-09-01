@@ -14,7 +14,8 @@ Here are just a few things that are possible with Nectar:
 Build relationships between **@nouns** and **#categories** by writing regular English sentences:
 
 ```
-@Nectar is a #human-friendly #language invented by @Darryl_Yeo and written with @Rust, @Web_Assembly, @TypeScript and @Deno.
+@Nectar is a #human-friendly #language invented by @Darryl_Yeo
+and written with @Rust, @Web_Assembly, @TypeScript and @Deno.
 ```
 
 This generates the following knowledge graph:
@@ -33,7 +34,7 @@ This generates the following knowledge graph:
  Categorizations: @Nectar is #human-friendly
                   @Nectar is #language
 
-       Relations: @Nectar is invented by @Darryl_Yeo
+       Relations: @Nectar invented by @Darryl_Yeo
                   @Nectar written with @Rust
                   @Nectar written with @Web_Assembly
                   @Nectar written with @TypeScript
@@ -87,7 +88,48 @@ The #planet @Mars (aka the @Red_Planet)
 Aliases, compound subjects, compound predicates, compound sentences - oh my!
 
 ```
-@Pac-Man is a #male #Pac-Person, and @Ms_Pac-Man is a #female #Pac-Person. @Pac-Man is married to @Ms_Pac-Man. @Pac-Man and @Ms_Pac-Man are enemies with @Blinky (also known as @Shadow or @Akabei), @Pinky/@Speedy/@Pinki, @Inky (otherwise referred to as @Bashful or @Aosuke), and @Clyde (@Pokey, @Guzuta). @Blinky, @Speedy, @Bashful, and @Guzuta are #ghosts (#ghost). @Speedy is #female; @Shadow, @Aosuke, and @Pokey are #male.
+@Pac-Man is a #male #Pac-Person, and @Ms_Pac-Man is a #female #Pac-Person.
+@Pac-Man is married to @Ms_Pac-Man.
+@Pac-Man and @Ms_Pac-Man are enemies with @Blinky (also known as @Shadow or @Akabei), @Pinky/@Speedy/@Pinki, @Inky (otherwise referred to as @Bashful or @Aosuke), and @Clyde (@Pokey, @Guzuta).
+@Blinky, @Speedy, @Bashful, and @Guzuta are #ghosts (#ghost).
+@Speedy is #female; @Shadow, @Aosuke, and @Pokey are #male.
+```
+
+```
+           Nouns: @Pac-Man
+                  @Ms_Pac-Man
+                  @Blinky/@Shadow/@Akabei
+                  @Pinky/@Speedy/@Pinki
+                  @Inky/@Bashful/@Aosuke
+                  @Clyde/@Pokey/@Guzuta
+
+      Categories: #male
+                  #Pac-Person
+                  #female
+                  #ghosts/#ghost
+
+ Categorizations: @Pac-Man is #male
+                  @Pac-Man is #Pac-Person
+                  @Ms_Pac-Man is #female
+                  @Ms_Pac-Man is #Pac-Person
+                  @Blinky/@Shadow/@Akabei is #ghosts/#ghost
+                  @Pinky/@Speedy/@Pinki is #ghosts/#ghost
+                  @Inky/@Bashful/@Aosuke is #ghosts/#ghost
+                  @Clyde/@Pokey/@Guzuta is #ghosts/#ghost
+                  @Pinky/@Speedy/@Pinki is #female
+                  @Blinky/@Shadow/@Akabei is #male
+                  @Inky/@Bashful/@Aosuke is #male
+                  @Clyde/@Pokey/@Guzuta is #male
+
+       Relations: @Pac-Man married to @Ms_Pac-Man
+                  @Pac-Man enemies with @Blinky/@Shadow/@Akabei
+                  @Pac-Man enemies with @Pinky/@Speedy/@Pinki
+                  @Pac-Man enemies with @Inky/@Bashful/@Aosuke
+                  @Pac-Man enemies with @Clyde/@Pokey/@Guzuta
+                  @Ms_Pac-Man enemies with @Blinky/@Shadow/@Akabei
+                  @Ms_Pac-Man enemies with @Pinky/@Speedy/@Pinki
+                  @Ms_Pac-Man enemies with @Inky/@Bashful/@Aosuke
+                  @Ms_Pac-Man enemies with @Clyde/@Pokey/@Guzuta
 ```
 
 (Not yet implemented.) If several of your objects start looking the same, you can define a **rule** or **schema** using "every":
