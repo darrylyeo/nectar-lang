@@ -3,9 +3,17 @@ import { NectarInterpreter } from "./interpreter.ts"
 if(Deno.args.length === 0)
 	(await import('./repl.ts')).repl()
 
-else if(Deno.args.length === 1)
-	new NectarInterpreter().evaluate(
-		new TextDecoder('utf-8').decode(
-			Deno.readFileSync(Deno.args[0])
-		)
+else for(const file of Deno.args){
+	const interpreter = new NectarInterpreter()
+
+	const results = interpreter.evaluate(
+		new TextDecoder('utf-8').decode(Deno.readFileSync(file))
 	)
+	if(results.length)
+		for(const result of results)
+			console.log(result)
+	else
+		interpreter.debug()
+	
+	console.log()
+}

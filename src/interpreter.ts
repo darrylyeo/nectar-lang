@@ -475,7 +475,7 @@ export class NectarInterpreter {
 		// Print a table of the current state
 		console.log(
 			// @ts-ignore
-			"\n" + this.scope.debug().map(([k, [v, ...vs]]) =>
+			this.scope.debug().map(([k, [v, ...vs]]) =>
 				// [(k + ": ").padStart(18) + v, ...vs].join("\n" + " ".repeat(18))
 				[(k + ": ").padStart(18) + v, ...vs].join("\n").replace(/\n/g, "\n" + " ".repeat(18))
 			).join("\n\n")

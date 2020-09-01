@@ -29,6 +29,7 @@ export async function repl(){
 			interpreter.pushScope(match[1])
 		else if(line.trim() === "}"){
 			interpreter.popScope()
+			console.log()
 			interpreter.debug()
 		}
 		else try {
@@ -36,8 +37,10 @@ export async function repl(){
 			if(results.length)
 				for(const result of results)
 					console.log("->", result)
-			else
+			else{
+				console.log()
 				interpreter.debug()
+			}
 		}
 		catch(e){
 			console.error(e)
