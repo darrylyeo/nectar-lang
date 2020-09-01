@@ -19,6 +19,34 @@ Build relationships between **@nouns** and **#categories** by writing regular En
 @Nectar is a #human-friendly #language invented by @Darryl_Yeo and written with @Rust, @Web_Assembly, @TypeScript and @Deno.
 ```
 
+This generates the following knowledge graph:
+
+```
+           Nouns: @Nectar
+                  @Darryl_Yeo
+                  @Rust
+                  @Web_Assembly
+                  @TypeScript
+                  @Deno
+
+      Categories: #human-friendly
+                  #language
+
+ Categorizations: @Nectar is #human-friendly
+                  @Nectar is #language
+
+       Relations: @Nectar is invented by @Darryl_Yeo
+                  @Nectar written with @Rust
+                  @Nectar written with @Web_Assembly
+                  @Nectar written with @TypeScript
+                  @Nectar written with @Deno
+                  @Nectar invented by @Darryl_Yeo
+                  @Nectar written with @Rust
+                  @Nectar written with @Web_Assembly
+                  @Nectar written with @TypeScript
+                  @Nectar written with @Deno
+```
+
 @Nouns are also objects with **properties**:
 
 ```

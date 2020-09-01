@@ -67,8 +67,9 @@ noun_alias = _{
 	","? ~ aka ~ noun_disjunction ~ ","?
 }
 noun_entity = {
-	a_noun ~ ("/" ~ a_noun)* |
-	a_noun ~ noun_alias?
+	a_noun ~ ("/" ~ a_noun)+ |
+	a_noun ~ noun_alias |
+    a_noun
 }
 nouns = {
 	noun_entity ~ (
@@ -87,8 +88,9 @@ category_alias = _{
 	","? ~ aka ~ category_disjunction ~ ","?
 }
 category_entity = {
-	a_category ~ ("/" ~ a_category)* |
-	a_category ~ category_alias?
+	a_category ~ ("/" ~ a_category)+ |
+	a_category ~ category_alias |
+    a_category
 }
 categories = {
 	category_entity ~ (
@@ -103,66 +105,72 @@ relation = {
 	^"says" |
 	^"loves" |
 	^"likes" |
-	(^"maps" | ^"reduces" | ^"transforms" | ^"translates" | ^"compiles" | ^"transpiles" | ^"adapts") ~ (^"into" | ^"to") |
-	(^"lives" | ^"works" | ^"plays" | ^"made") ~ (^"in" | ^"at" | ^"for" | ^"with") |
-	is? ~ article? ~ (
-		^"type" |
-		^"representation" |
-		^"element" |
-		^"subset" |
-		^"superset" |
-		^"leader" |
-		^"follower" |
-		^"member" |
-		^"species" |
-		^"citizen" |
-		^"friend" |
-		^"enemy" |
-		^"coworker" |
-		^"spouse" |
-		^"parent" |
-		^"sibling" |
-		^"child" |
-		^"contributor"
-	) ~ ^"of" |
-	is? ~ (
-		^"related" |
-		^"married"
-	) ~ ^"to" |
-	is? ~ (
-		^"friends" |
-		^"enemies" |
-		^"acquaintances" |
-		^"coworkers" |
-		^"married"
-	) ~ ^"with" |
-	is? ~ (
-		^"created" |
-		^"written" |
-		^"spoken" |
-		^"authored" |
-		^"filmed" |
-		^"produced" |
-		^"performed" |
-		^"played" |
-		^"designed" |
-		^"composed" |
-		^"represented" |
-		^"drafted" |
-		^"edited" |
-		^"published" |
-		^"made" |
-		^"invented" |
-		^"manufactured" |
-		^"distributed" |
-		^"sold" |
-		^"adapted"
-	) ~ (^"by" | ^"for" | ^"with") |
-	is? ~ (
-		^"affected" |
-		^"caused" |
-		^"adopted"
-	) ~ ^"by"
+//	(^"maps" | ^"reduces" | ^"transforms" | ^"translates" | ^"compiles" | ^"transpiles" | ^"adapts") ~ (^"into" | ^"to") |
+//	(^"lives" | ^"works" | ^"plays" | ^"made") ~ (^"in" | ^"at" | ^"for" | ^"with") |
+//	is? ~ article? ~ (
+//		^"type" |
+//		^"representation" |
+//		^"element" |
+//		^"subset" |
+//		^"superset" |
+//		^"leader" |
+//		^"follower" |
+//		^"member" |
+//		^"species" |
+//		^"citizen" |
+//		^"friend" |
+//		^"enemy" |
+//		^"coworker" |
+//		^"spouse" |
+//		^"parent" |
+//		^"sibling" |
+//		^"child" |
+//		^"contributor"
+//	) ~ ^"of" |
+//	is? ~ (
+//		^"related" |
+//		^"married"
+//	) ~ ^"to" |
+//	is? ~ (
+//		^"friends" |
+//		^"enemies" |
+//		^"acquaintances" |
+//		^"coworkers" |
+//		^"married"
+//	) ~ ^"with" |
+//	is? ~ (
+//		^"created" |
+//		^"written" |
+//		^"spoken" |
+//		^"authored" |
+//		^"filmed" |
+//		^"produced" |
+//		^"performed" |
+//		^"played" |
+//		^"designed" |
+//		^"composed" |
+//		^"represented" |
+//		^"drafted" |
+//		^"edited" |
+//		^"published" |
+//		^"made" |
+//		^"invented" |
+//		^"manufactured" |
+//		^"distributed" |
+//		^"sold" |
+//		^"adapted"
+//	) ~ (^"by" | ^"for" | ^"with") |
+//	is? ~ (
+//		^"affected" |
+//		^"caused" |
+//		^"adopted"
+//	) ~ ^"by" |
+//	is? ~ (
+//		^"affected" |
+//		^"caused" |
+//		^"adopted"
+//	) ~ ^"over" |
+	is? ~ article? ~ identifier ~ (^"about" | ^"above" | ^"across" | ^"after" | ^"against" | ^"among" | ^"around" | ^"at" | ^"before" | ^"behind" | ^"below" | ^"beside" | ^"between" | ^"by" | ^"down" | ^"during" | ^"for" | ^"from" | ^"in" | ^"inside" | ^"into" | ^"near" | ^"of" | ^"off" | ^"on" | ^"out" | ^"over" | ^"through" | ^"to" | ^"toward" | ^"under" | ^"up" | ^"with")
 }
 
 
