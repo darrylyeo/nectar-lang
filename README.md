@@ -11,10 +11,12 @@ Here are just a few things that are possible with Nectar:
 
 ## How does it work?
 
+### Declaring data
+
 Build relationships between **@nouns** and **#categories** by writing regular English sentences:
 
 ```
-@Nectar is a #human-friendly #language invented by @Darryl_Yeo
+@Nectar is a #human-friendly #language created for the @Repl_it_Language_Jam
 and written with @Rust, @Web_Assembly, @TypeScript and @Deno.
 ```
 
@@ -22,7 +24,7 @@ This generates the following knowledge graph:
 
 ```
            Nouns: @Nectar
-                  @Darryl_Yeo
+                  @Repl_it_Language_Jam
                   @Rust
                   @Web_Assembly
                   @TypeScript
@@ -34,14 +36,14 @@ This generates the following knowledge graph:
  Categorizations: @Nectar is #human-friendly
                   @Nectar is #language
 
-       Relations: @Nectar invented by @Darryl_Yeo
+       Relations: @Nectar created for @Repl_it_Language_Jam
                   @Nectar written with @Rust
                   @Nectar written with @Web_Assembly
                   @Nectar written with @TypeScript
                   @Nectar written with @Deno
 ```
 
-@Nouns are also objects with **properties**:
+@Nouns are also objects that can be assigned any number of **properties** (like a key-value store). Property values can take the form of strings, numbers, and numbers with units.
 
 ```
 @Earth is a #planet
@@ -51,7 +53,7 @@ This generates the following knowledge graph:
 	and an equatorial_radius of 6378.1 km.
 ```
 
-This generates the following:
+This results in the following data:
 
 ```
            Nouns: @Earth {
@@ -69,14 +71,16 @@ This generates the following:
  Categorizations: @Earth is #planet
 ```
 
-Nouns can be **aliased**. As long as a noun is aliased anywhere within a set of statements, any one of the aliases will refer to the same object.
+### Aliases and complex declarations
+
+Nouns can be **aliased** with multiple "@" identifiers. Any of the aliases can be used to reference the same noun object, regardless of where the alias is declared within a set of statements.
 
 ```
-@Earth (also known as @Terra or the @Blue_Marble)
+@Earth (aka @Terra or the @Blue_Marble)
 	has an average_orbital_speed of 29.78 km/s
 	and a mass of 5.97237e24 kg.
 
-The #planet @Mars (aka the @Red_Planet)
+The #planet @Mars (also known as the @Red_Planet)
 	has name "Mars"
 	has color "red"
 	has rank 4
@@ -85,7 +89,7 @@ The #planet @Mars (aka the @Red_Planet)
 	has a mass of 6.4171e23 kg.
 ```
 
-Aliases, compound subjects, compound predicates, compound sentences - oh my!
+Nectar excels when many nouns and categories share the same relations and/or categorizations. You can write a complex knowledge graph really quickly using aliases, compound subjects, compound predicates, and compound sentences!
 
 ```
 @Pac-Man is a #male #Pac-Person, and @Ms_Pac-Man is a #female #Pac-Person.
@@ -132,23 +136,36 @@ Aliases, compound subjects, compound predicates, compound sentences - oh my!
                   @Ms_Pac-Man enemies with @Clyde/@Pokey/@Guzuta
 ```
 
-(Not yet implemented.) If several of your objects start looking the same, you can define a **rule** or **schema** using "every":
+### Schemas and rules (not yet implemented)
+
+If you start noticing similarities within your data, you can formalize these patterns as **schemas** and **rules** by using the word "every". For all nouns that are members of the given categories, schemas define a set of property names and types, while rules define a relation between members.
 
 ```
-Every #planet has a numerical rank and a average_orbital_speed in km/s.
+Every #planet has a numerical rank, a color string, and a average_orbital_speed in km/s.
+Every #Pac-Person is enemies with every #ghost.
 ```
 
-(Partially implemented.) Finished brain dumping? You can **query** your knowledge graph within the same document:
+Schemas are useful for generating schemas for other data representations like SQL and GraphQL. Rules are useful for performing automated reasoning, allowing you to mine data out of your existing data and make discoveries.
+
+### Querying the knowledge graph (partially implemented)
+
+Finished brain dumping? You can **query** your knowledge graph directly within your Nectar document. Queries begin with "is" or "does", contain "what" or "who", and/or end with a question mark.
 
 ```
 Is @Nectar a #language?
-Is @Nectar #human-friendly?
-@Nectar is invented by $who?
+@Nectar is #human-friendly?
+@Nectar is invented by who?
 What is @Earth?
 Does @Earth have an equatorial_radius greater than 6000 km?
-Is the rank of @Earth closer than the rank of @Mars?
+Is the rank of @Earth lower than the rank of @Mars?
 @Earth mass < @Mars mass?
+Who is #female?
+Who is married to who?
 ```
+
+
+
+The Nectar interpreter will return a list of results
 
 A **`scope {}`** allows you to create a temporary graph fragment. Scopes are annotated with a label, and any statements, rules or aliases declared within it will only apply to the queries inside. This can be helpful for testing multiple scenarios on a common set of entities, especially if there are conflicts in terminology.
 
@@ -229,24 +246,29 @@ The REPL can also create and exit scopes dynamically. Type `scope_name {` to ent
 Nectar strives to liberate your data from arbitrary formats or structural limitations. With a hypergraph as its underlying, all-encompassing data structure, Nectar will be able to import from or output query results to CSV, JSON, YAML, SQL, GraphQL schemas, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, graph visualizations and much more in the future!
 
 Features to add:
-* Pronouns like "it", "this", "they" to reference the subject of a previous statement
-* Modifier blocks that apply hyper-relations to a group of relations:
-  * Timestamps and time ranges
-  * Locations
-* Intelligently apply contextual time ranges to statements based on past, present, and future tense
-* Automated reasoning/logical inferences
-* Reactive properties
-  * Bindings with JavaScript libraries like React, Vue, Svelte, RxJS
+* Higher-order relations ("hyper-relations") that relate a relation to a categorization, or another relation: `@Harry met @Sally in @New_York_City`, `The @chicken crossed the @road because the @chicken was #bored`
+  * Modifier blocks that apply hyper-relations to a group of relations:
+    * Timestamps and time ranges
+    * Locations
+* Named capture variables in place of "what" or "who" in queries: "$a is married to $b?"
+* Automated reasoning/logical inferences based on rules: "If $a is married to $b, $b is married to $a."
+  * Intelligently apply contextual time ranges to statements based on past, present, and future tense: "A was a married to $b?"
+  * Negative statements: "The @princess is not in the @castle"
+* Create custom interpreters that export/transpile data, rules, and schemas to other common data formats
+  * CSV, JSON, YAML, SQL, GraphQL, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, etc.
+* Computed/reactive properties
+  * Generate mappings to reactive bindings in JavaScript libraries like React, Vue, and Svelte
 * Continue to make the grammar more comprehensive, robust, and closer to regular English
-  * Add custom dictionaries of words to use within the grammar
+  * Pronouns like "it", "this", "they" to reference the subject of a previous statement
+  * Add custom dictionaries of words and phrases for easier aliasing of plurals and verb conjugations
 
 ## The Making of Nectar
 
-The Nectar parser is created with [pest](https://pest.rs), a Rust library for creating PEGs (parsing expression grammars). Nectar's grammar is defined in `src/grammar.pest`. I used the `pest_consume` crate to convert the AST into Rust structs.
+Nectar was created in August 2020 as part of the Repl.it Programming Language Jam.
 
-Since this was my first time using Rust, I had a lot of trouble writing the interpreter (my attempt is found at `src/interpreter.ts`). I decided to start over using the more familiar TypeScript, and [attempted to port the pest grammar to `nearley.js`](https://repl.it/@nectarlang/nectar-lang-js). However, I ran into a lot of issues getting a `moo.js` lexer to work correctly.
+The Nectar parser is created with [pest](https://pest.rs), a Rust library for creating PEGs (parsing expression grammars). Nectar's grammar is defined in `src/grammar.pest`. The `pest_consume` crate was used to convert the AST into Rust structs, and the `serde` crate was used to serialize the AST into JSON.
 
-I ultimately settled on a hybrid approach using WebAssembly. I created a Rust library that uses the `serde` crate to serialize the original Rust struct-AST into JSON. I then used Second State's [ssvmup](https://secondstate.io/ssvm) to compile the Rust library to a WebAssembly binary targeting the TypeScript runtime Deno. From there, I was able to write the Nectar interpreter and REPL comfortably in TypeScript. Whew!
+The parser is compiled to a WebAssembly binary targeting the TypeScript runtime Deno via Second State's [ssvmup](https://secondstate.io/ssvm); the Nectar interpreter and REPL are written in TypeScript.
 
 
 ## Why "Nectar"?
