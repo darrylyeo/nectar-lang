@@ -378,6 +378,8 @@ Type a statement or query, then hit ENTER. If you enter an empty line or there a
 
 You can also create and exit scopes dynamically. Type `scope_name {` to enter a new scope, and type `}` to exit the scope.
 
+To clear the knowledge graph, type `reset`.
+
 ## The Future of Nectar
 
 Nectar strives to be as frictionless as possible and liberate your data from arbitrary formats or structural limitations. With a hypergraph as its underlying, all-encompassing data structure, Nectar will be able to import from or output query results to CSV, JSON, YAML, SQL, GraphQL schemas, MongoDB, ArangoDB, GUN.js, Neo4J, Grakn.AI, graph visualizations and much more in the future!
