@@ -1,2 +1,4 @@
-@Nectar is a #language.
+@Nectar is a #human-friendly #language
+written with @Rust, @Web_Assembly, @TypeScript and @Deno.
+
 @Nectar says "Hello world!"

@@ -1,30 +1,11 @@
-Every #country is a #location.
+parallel_universe {
+    @Earth has color "pink".
 
-	Given #country $country {
-		$country is a #location
-	}
-
-@United_States (aka @USA, @United_States_of_America) is a #country.
-
-@Texas is a #state in the @USA.
-
-Major_League_Soccer
-
-@Association_football (aka @football) is a #sport.
-
-Given $anything is in @United_States_of_America or @Canada {
-	@Football is also known as @soccer.
-
-	@Soccer has attendance_rank 3.
+    Color of @Earth?
+    Does @Earth have color "blue"?
+    Does @Earth have color "pink"?
 }
 
-Given #time $time after {
-
-}
-
-
-Query {
-	Given @Texas {
-		@Football
-	}
-}
+Color of @Earth?
+Does @Earth have color "blue"?
+Does @Earth have color "pink"?

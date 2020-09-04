@@ -1,0 +1,57 @@
+@American_football, also known as @gridiron, is a #team_sport with a team of 11 players.
+@Association_football (aka @soccer) is a #team_sport.
+
+Every #country is a #location.
+@United_States_of_America (aka @United_States, @USA) is a #country.
+@Canada is a country.
+@Mexico is a country.
+
+In #country [
+	@USA or @Canada [
+		@Association_football is also known as @soccer.
+
+		@Soccer has attendance_rank 3.
+
+		@Soccer is played in @Major_League_Soccer.
+	]
+
+	@USA [
+		@American_football is also called @football.
+		
+		@Football has attendance_rank 1.
+
+		@Football is played in the @National_Football_League. 
+	]
+
+	@Mexico [
+		@Association_football is also known as @football.
+
+		@Football has attendance_rank 1.
+		@Football is played in the @Liga_MX.
+
+		@American_football has attendance_rank 8.
+		@American_football is played in the @Liga_de_Fútbol_Americano_Profesional.
+	]
+]
+
+In #location [
+	@United_States [
+		What is @football?
+		What is the attendance_rank of @football?
+		@Football is played in what?
+	]
+	@Mexico [
+		What is @football?
+		What is the attendance_rank of @football?
+		@Football is played in what?
+	]
+	@Canada [
+		What is @soccer?
+		What is the attendance_rank of @soccer?
+		@Soccer is played in what?
+
+		What is @gridiron?
+		What is the attendance_rank of @gridiron?
+		@Gridiron is played in what?
+	]
+]
