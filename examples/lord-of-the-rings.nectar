@@ -1,0 +1,30 @@
+in #Middle_Earth_landmark [
+    @Mount_Doom [
+        @Sauron forges the @One_Ring
+    ]
+    @Anduin [
+        @Isildur loses the @One_Ring
+        @Deagol finds the @One_Ring
+        @Smeagol murders @Deagol
+        @Smeagol steals the @One_Ring
+    ]
+    the @Misty_Mountains [
+        @Smeagol/@Gollum loses the @One_Ring
+        @Bilbo finds the @One_Ring
+    ]
+    the @Shire [
+        @Frodo obtains the @One_Ring
+    ]
+    @Mount_Doom [
+        @Gollum steals the @One_Ring
+        @Gollum destroys the @One_Ring
+    ]
+]
+
+
+Did @Bilbo find the @One_Ring in @Anduin?
+Is @Smeagol also known as @Gollum?
+@Frodo obtains the @One_Ring in where?
+What happened in the @Misty_Mountains?
+Who finds the @One_Ring?
+Is @Mount_Doom a #Middle_Earth_landmark?
