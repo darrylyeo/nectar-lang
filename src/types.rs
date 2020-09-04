@@ -60,6 +60,13 @@ pub enum NectarPropertyExpressionJunction<'a> {
 
 pub type NectarRelation<'a> = &'a str;
 
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct NectarCategorization<'a> {
+	noun: NectarNoun<'a>,
+	categories: Vec<NectarCategoryEntity<'a>>
+}
+
 #[derive(Debug, Serialize)]
 #[serde(tag = "type", content = "predicate", rename_all = "camelCase")]
 pub enum NectarPredicate<'a> {
@@ -115,7 +122,9 @@ pub type NectarScopeName<'a> = &'a str;
 pub enum NectarStatement<'a> {
 	Declaration {
 		subjects: Vec<NectarNounEntity<'a>>,
-		predicates: Vec<NectarPredicate<'a>>
+		predicates: Vec<NectarPredicate<'a>>,
+		categorizations: Vec<NectarCategorization<'a>>,
+		categorizations2: Vec<NectarCategorization<'a>>
 	},
 	Query(NectarQuery<'a>),
 	Scope {

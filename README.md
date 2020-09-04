@@ -69,6 +69,8 @@ This results in the following:
  Categorizations: @Earth is #planet
 ```
 
+Like English, Nectar's grammar is very flexible. Statements can be separated by a period, semicolon, exclamation point, or newline. Articles like "a", "the", and "another" are optional; so is "and" in a compound clause. With Nectar, there's always more than one way to write the same thing!
+
 ### Aliases
 
 Nouns can be **aliased** to multiple "@" identifiers. Any of the identifiers can be used to reference the same noun object, regardless of where the alias is declared within the current scope.
@@ -134,9 +136,11 @@ Nectar excels when many nouns and categories share the same **relations** and/or
 ```
 @Pac-Man is a #male #Pac-Person, and @Ms_Pac-Man is a #female #Pac-Person.
 @Pac-Man is married to @Ms_Pac-Man.
-@Pac-Man and @Ms_Pac-Man are enemies with @Blinky (also known as @Shadow or @Akabei),
-@Pinky/@Speedy/@Pinki, @Inky (otherwise referred to as @Bashful or @Aosuke),
-and @Clyde (@Pokey, @Guzuta).
+@Pac-Man and @Ms_Pac-Man are enemies with
+	@Blinky (also known as @Shadow or @Akabei),
+	@Pinky (otherwise referred to as @Speedy or @Pinki),
+	@Inky (@Bashful, @Aosuke),
+	and @Clyde/@Pokey/@Guzuta.
 @Blinky, @Speedy, @Bashful, and @Guzuta are #ghosts (#ghost).
 @Speedy is #female; @Shadow, @Aosuke, and @Pokey are #male.
 ```
@@ -312,14 +316,15 @@ in #Middle_Earth_landmark [
         @Smeagol steals the @One_Ring
     ]
     the @Misty_Mountains [
+        @Smeagol/@Gollum loses the @One_Ring
         @Bilbo finds the @One_Ring
     ]
     the @Shire [
         @Frodo obtains the @One_Ring
     ]
     @Mount_Doom [
-        @Smeagol steals the @One_Ring
-        @Smeagol/@Gollum destroys the @One_Ring
+        @Gollum steals the @One_Ring
+        @Gollum destroys the @One_Ring
     ]
 ]
 ```
@@ -353,25 +358,25 @@ Schemas are useful for generating schemas for other data representations like SQ
 
 ## Using Nectar
 
-To run Nectar with a file e.g. hello.nectar, run the following command line:
+To run Nectar with a file (e.g. `hello.nectar`), run the following command line:
 
 ```
-deno run --allow-read --allow-env --allow-net --unstable src/hello.ts hello.nectar
+deno run --allow-read --allow-env --allow-net --unstable src/main.ts hello.nectar
 ```
 
 You can pass as many file arguments as you wish.
 
-## Using the REPL
+### Using the REPL
 
-To launch the Nectar REPL, run the following command line (or press "Run" on repl.it):
+To launch the Nectar REPL, run the command without arguments (or [press "Run" on repl.it](https://repl.it/@nectarlang/nectar-lang#README.md)):
 
 ```
 deno run --allow-read --allow-env --allow-net --unstable src/main.ts
 ```
 
-Type a statement or query, then hit ENTER. If the line is empty or there are no query results to be shown, the REPL will show you all the entities (nouns, categories, categorizations, relations, and hyper-relations) that have been defined thus far.
+Type a statement or query, then hit ENTER. If you enter an empty line or there are no query results to be shown, the REPL will show you all the entities (nouns, categories, categorizations, relations, and hyper-relations) that have been declared thus far.
 
-The REPL can also create and exit scopes dynamically. Type `scope_name {` to enter a new scope. Type `}` to exit the scope.
+You can also create and exit scopes dynamically. Type `scope_name {` to enter a new scope, and type `}` to exit the scope.
 
 ## The Future of Nectar
 
@@ -408,9 +413,3 @@ Nectar is fast as a hummingbird, resilient as a butterfly, and so fluid and rich
 ## Try Nectar on Repl.it!
 
 [https://repl.it/@nectarlang/nectar-lang](https://repl.it/@nectarlang/nectar-lang#README.md)
-
----
-
-### Credits
-
-@darrylyeo, @deebee

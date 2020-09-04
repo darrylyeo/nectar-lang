@@ -6,6 +6,13 @@ type Result<T> = std::result::Result<T, Error<Rule>>;
 type Node<'i> = pest_consume::Node<'i, Rule, ()>;
 
 
+fn vecOfTupleToTupleOfVec<A, B>(v: std::vec::IntoIter<(A, B)>) -> (Vec<A>, Vec<B>){
+	let a = v.map(|(a, _)| a);
+	let b = v.map(|(_, b)| b);
+	return (a.collect(), b.collect())
+}
+
+
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 pub struct NectarParser;
@@ -140,10 +147,16 @@ impl NectarParser {
 				},
 		))
 	}
-	fn nouns(input: Node) -> Result<Vec<NectarNounEntity>> {
+	fn noun_phrase(input: Node) -> Result<(NectarNoun, Option<NectarCategorization>)> {
 		Ok(match_nodes!(input.into_children();
-			[noun_entity(nouns)..] =>
-				nouns.collect()
+			[category_entities(categories), noun(noun)] => (
+				noun,
+				Some(NectarCategorization {noun, categories})
+			),
+			[noun(noun)] => (
+				noun,
+				None
+			)
 		))
 	}
 	fn noun_disjunction(input: Node) -> Result<NectarNounJunction> {
@@ -166,6 +179,47 @@ impl NectarParser {
 				noun_conjunction
 		))
 	}
+	fn noun_entity(input: Node) -> Result<(NectarNounEntity, Vec<NectarCategorization>)> {
+		Ok(match_nodes!(input.into_children();
+			[noun_phrase(data)..] => {
+				let (noun_entity, categorizations) = vecOfTupleToTupleOfVec(data);
+				(
+					noun_entity,
+					categorizations.iter().filter_map(|categorization| *categorization)
+					.collect()
+				)
+			}
+			// [noun_phrase(data)..] => (
+			// 	data
+			// 		.map(|(noun, _)| noun)
+			// 		.collect(),
+			// 	data
+			// 		.filter_map(|(_, categorization)| categorization)
+			// 		.collect()
+			// )
+		))
+	}
+	fn noun_entities(input: Node) -> Result<(Vec<NectarNounEntity>, Vec<NectarCategorization>)> {
+		Ok(match_nodes!(input.into_children();
+			[noun_entity(data)..] => {
+				let (noun_entity, categorizations) = vecOfTupleToTupleOfVec(data);
+				(
+					noun_entity,
+					categorizations.iter()
+						.flat_map(|categorization| *categorization)
+						.collect()
+				)
+			}
+			// [noun_entity(data)..] => (
+			// 	data
+			// 		.map(|(noun_entity, _)| noun_entity)
+			// 		.collect(),
+			// 	data
+			// 		.flat_map(|(_, categorizations)| categorizations)
+			// 		.collect()
+			// )
+		))
+	}
 
 	fn category(input: Node) -> Result<NectarCategory> {
 		Ok(input.as_str())
@@ -186,7 +240,7 @@ impl NectarParser {
 				},
 		))
 	}
-	fn categories(input: Node) -> Result<Vec<NectarCategoryEntity>> {
+	fn category_entities(input: Node) -> Result<Vec<NectarCategoryEntity>> {
 		Ok(match_nodes!(input.into_children();
 			[category_entity(categories)..] =>
 				categories.collect()
@@ -230,7 +284,7 @@ impl NectarParser {
 	}
 	fn categorization_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[categories(categories)] =>
+			[category_entities(categories)] =>
 				NectarPredicate::Categorization {categories}
 		))
 	}
@@ -240,46 +294,75 @@ impl NectarParser {
 				NectarPredicate::HasProperty {property, expression}
 		))
 	}
-	fn relation_predicate(input: Node) -> Result<NectarPredicate> {
+	fn relation_predicate(input: Node) -> Result<(NectarPredicate, Vec<NectarCategorization>)> {
 		Ok(match_nodes!(input.into_children();
-			[relation(relation), nouns(objects)] =>
-				NectarPredicate::Relation {relation, objects}
+			[relation(relation), noun_entities((objects, categorizations))] => (
+				NectarPredicate::Relation {relation, objects},
+				categorizations
+			)
 		))
 	}
 	fn hyper_relation_predicate(input: Node) -> Result<NectarPredicate> {
 		Ok(match_nodes!(input.into_children();
-			[relation(relation), categories(categories)] =>
+			[relation(relation), category_entities(categories)] =>
 				NectarPredicate::HyperRelation {relation, categories}
 		))
 	}
 
-	fn predicate(input: Node) -> Result<NectarPredicate> {
+	fn predicate(input: Node) -> Result<(NectarPredicate, Vec<NectarCategorization>)> {
 		Ok(match_nodes!(input.into_children();
 			[aka_predicate(aka_predicate)] =>
-				aka_predicate,
+				(aka_predicate, vec!()),
 			[has_property_predicate(has_property_predicate)] =>
-				has_property_predicate,
+				(has_property_predicate, vec!()),
 			[categorization_predicate(categorization_predicate)] =>
-				categorization_predicate,
-			[relation_predicate(relation_predicate)] =>
-				relation_predicate,
+				(categorization_predicate, vec!()),
+			[relation_predicate((relation_predicate, categorizations))] =>
+				(relation_predicate, categorizations),
 			[hyper_relation_predicate(hyper_relation_predicate)] =>
-				hyper_relation_predicate
+				(hyper_relation_predicate, vec!()),
 		))
 	}
-	fn predicates(input: Node) -> Result<Vec<NectarPredicate>> {
+	fn predicates(input: Node) -> Result<(Vec<NectarPredicate>, Vec<NectarCategorization>)> {
 		Ok(match_nodes!(input.into_children();
-			[predicate(predicates)..] =>
-				predicates.collect()
+			[predicate(data)..] => {
+				let (predicates, categorizations) = vecOfTupleToTupleOfVec(data);
+				(
+					predicates,
+					categorizations.iter()
+						.flat_map(|categorizations| *categorizations)
+						.collect()
+				)
+			}
+			// [predicate(data)..] => (
+			// 	data
+			// 		.map(|(predicate, _)| predicate)
+			// 		.collect(),
+			// 	data
+			// 		.flat_map(|(_, categorizations)| categorizations)
+			// 		.collect()
+			// )
 		))
 	}
 
 	fn declaration(input: Node) -> Result<NectarStatement> {
 		Ok(match_nodes!(input.into_children();
-			[nouns(subjects), predicates(predicates)] =>
-				NectarStatement::Declaration {subjects, predicates},
-			[nouns(subjects)] =>
-				NectarStatement::Declaration {subjects, predicates: vec!()},
+			[noun_entities((subjects, categorizations)), predicates((predicates, categorizations2))] => {
+				// categorizations.extend(categorizations2);
+				NectarStatement::Declaration {
+					subjects,
+					predicates,
+					categorizations,
+					categorizations2
+				}
+			},
+			[noun_entities((subjects, categorizations))] =>
+				NectarStatement::Declaration {
+					subjects,
+					predicates: vec!(),
+					categorizations: categorizations,
+					categorizations2: vec!()
+				},
 		))
 	}
 

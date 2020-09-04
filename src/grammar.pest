@@ -45,7 +45,7 @@ comparator_disjunction = _{ comparator ~ (("," ~ comparator)* ~ (","? ~ or ~ com
 property = { non_keyword }
 a_property = _{ article? ~ property }
 
-property_expression = { a_property ~ of ~ a_noun | a_noun ~ a_property | string | quantity | number }
+property_expression = { a_property ~ of ~ noun_phrase | noun_phrase ~ a_property | string | quantity | number }
 property_expression_disjunction = {
 	(a_property ~ of) ~ noun_disjunction |
 	property_expression ~ (("," ~ property_expression)* ~ (","? ~ or ~ property_expression)+)?
@@ -58,9 +58,9 @@ property_expression_junction = { property_expression_disjunction | property_expr
 
 
 noun = @{"@" ~ identifier | "@" ~ string }
-a_noun = _{ article? ~ noun }
-noun_disjunction = { a_noun ~ (("," ~ a_noun)* ~ (","? ~ or ~ a_noun)+)? }
-noun_conjunction = { a_noun ~ (("," ~ a_noun)* ~ (","? ~ and ~ a_noun)+)? }
+noun_phrase = { article? ~ category_entities? ~ noun }
+noun_disjunction = { noun_phrase ~ (("," ~ noun_phrase)* ~ (","? ~ or ~ noun_phrase)+)? }
+noun_conjunction = { noun_phrase ~ (("," ~ noun_phrase)* ~ (","? ~ and ~ noun_phrase)+)? }
 noun_junction = { noun_disjunction | noun_conjunction }
 noun_alias = _{
 	"(" ~ aka? ~ noun_disjunction ~ ")" |
@@ -68,11 +68,11 @@ noun_alias = _{
 	","? ~ aka ~ noun_disjunction ~ ","?
 }
 noun_entity = {
-	a_noun ~ ("/" ~ a_noun)+ |
-	a_noun ~ noun_alias |
-    a_noun
+	noun_phrase ~ ("/" ~ noun_phrase)+ |
+	noun_phrase ~ noun_alias |
+    noun_phrase
 }
-nouns = {
+noun_entities = {
 	noun_entity ~ (
 		("," ~ noun_entity)* ~ (","? ~ and ~ noun_entity)+ |
 		(";" ~ noun_entity)* ~ (";"? ~ and ~ noun_entity)+
@@ -80,9 +80,9 @@ nouns = {
 }
 
 category = @{ "#" ~ identifier }
-a_category = _{ article? ~ category }
-category_disjunction = { a_category ~ ("," ~ a_category)* ~ ((","? ~ or ~ a_category)+)? }
-category_conjunction = { a_category ~ ("," ~ a_category)* ~ ((","? ~ and ~ a_category)+)? }
+category_phrase = _{ article? ~ category }
+category_disjunction = { category_phrase ~ ("," ~ category_phrase)* ~ ((","? ~ or ~ category_phrase)+)? }
+category_conjunction = { category_phrase ~ ("," ~ category_phrase)* ~ ((","? ~ and ~ category_phrase)+)? }
 category_junction = { category_disjunction | category_conjunction }
 category_alias = _{
 	"(" ~ aka? ~ category_disjunction ~ ")" |
@@ -90,11 +90,11 @@ category_alias = _{
 	","? ~ aka ~ category_disjunction ~ ","?
 }
 category_entity = {
-	a_category ~ ("/" ~ a_category)+ |
-	a_category ~ category_alias |
-    a_category
+	category_phrase ~ ("/" ~ category_phrase)+ |
+	category_phrase ~ category_alias |
+    category_phrase
 }
-categories = {
+category_entities = {
 	category_entity ~ (
 		category_entity |
 		("," ~ category_entity)* ~ (","? ~ and ~ category_entity)+ |
@@ -179,9 +179,9 @@ is_relation = _{ is? ~ relation }
 
 aka_predicate = { is? ~ aka ~ noun_disjunction }
 has_property_predicate = { (does? ~ has | with)? ~ (a_property ~ of? ~ property_expression | property_expression ~ property) }
-categorization_predicate = { (is ~ (of? ~ article? ~ category_keyword)? | does? ~ has ~ article? ~ category_keyword ~ of?) ~ categories }
-relation_predicate = { is_relation ~ nouns }
-hyper_relation_predicate = { is_relation ~ categories }
+categorization_predicate = { (is ~ (of? ~ article? ~ category_keyword)? | does? ~ has ~ article? ~ category_keyword ~ of?) ~ category_entities }
+relation_predicate = { is_relation ~ noun_entities }
+hyper_relation_predicate = { is_relation ~ category_entities }
 
 predicate = {
 	aka_predicate |
@@ -216,7 +216,7 @@ relation_query = {
 }
 
 
-declaration = { nouns ~ predicates? }
+declaration = { noun_entities ~ predicates? }
 query = { aka_query | property_comparison_query | categorization_query | relation_query }
 
 dimension_slice = { property_expression ~ "[" ~ statements ~ "]" ~ property_expression?  }
